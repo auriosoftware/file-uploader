@@ -1,15 +1,12 @@
-import { FileStore } from "../domain/file-store";
-import { Dictionary } from "../util/types";
+import { FileRepository } from "../domain/file-repository";
+import { Dictionary } from "../utils/types";
 import { Readable, Writable } from "stream";
-import { NotFoundError } from "../errors";
+import { NotFoundError } from "../utils/errors";
 import MemoryStream = require("memorystream");
 
-export class InMemoryFileStore implements FileStore {
+export class InMemoryFileRepository implements FileRepository {
     private memory: Dictionary<Buffer> = {};
 
-    public async cleanup(): Promise<void> {
-        return;
-    }
 
     public async getFileReader(fileName: string): Promise<Readable> {
         const data = this.memory[fileName];
@@ -18,10 +15,6 @@ export class InMemoryFileStore implements FileStore {
         stream.push(data);
         stream.end();
         return stream;
-    }
-
-    public async initialize(): Promise<void> {
-        return;
     }
 
     public async getFileWriter(fileName: string): Promise<Writable> {
@@ -37,6 +30,15 @@ export class InMemoryFileStore implements FileStore {
         });
 
         return memStream;
+    }
+
+
+    public async initialize(): Promise<void> {
+        return;
+    }
+
+    public async cleanup(): Promise<void> {
+        return;
     }
 
 }

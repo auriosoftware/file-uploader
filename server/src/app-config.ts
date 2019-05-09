@@ -1,4 +1,4 @@
-import { parseOptionalNumber } from "./util/parse-utils";
+import { parseOptionalNumber } from "./utils/parse-utils";
 
 export interface AppConfig {
     httpServer: {

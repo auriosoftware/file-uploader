@@ -1,5 +1,5 @@
 import { FileUploadService } from "./file-upload-service";
-import { getLogger, setLogLevel } from "./util/logger";
+import { getLogger, setLogLevel } from "./utils/logger";
 import { appConfig } from "./app-config";
 
 const fileUploadService = new FileUploadService();

@@ -2,8 +2,8 @@ import { Express, Request, RequestHandler, Response } from 'express';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE } from 'http-status-codes';
 import { Server } from 'http';
 import { ActionContext } from "../domain/action-context";
-import { NotFoundError, ServiceNotAvailableError, UserError } from "../errors";
-import { getLogger } from "../util/logger";
+import { NotFoundError, ServiceNotAvailableError, UserError } from "./errors";
+import { getLogger } from "./logger";
 import * as express from 'express';
 
 export type HttpMethod = 'POST' | 'GET' | 'PUT' | 'DELETE';

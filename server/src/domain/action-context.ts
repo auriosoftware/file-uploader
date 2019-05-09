@@ -1,5 +1,5 @@
-import { FileStore } from "./file-store";
+import { FileRepository } from "./file-repository";
 
 export interface ActionContext {
-    fileStore: FileStore;
+    fileStore: FileRepository;
 }

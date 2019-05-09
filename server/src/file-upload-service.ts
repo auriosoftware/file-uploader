@@ -1,10 +1,10 @@
-import { HttpActionContextFactory, HttpApiServer } from "./http-api-server/http-server";
+import { HttpActionContextFactory, HttpApiServer } from "./utils/http-api-server";
 import { AppConfig } from "./app-config";
-import { getLogger, setLogLevel } from "./util/logger";
-import { FileStore } from "./domain/file-store";
-import { InMemoryFileStore } from "./file-store/in-memory-file-store";
-import { apiEndpoints } from "./http-api-server/http-endpoints";
-import { AsyncEventBus } from "./util/async-event-bus";
+import { getLogger, setLogLevel } from "./utils/logger";
+import { FileRepository } from "./domain/file-repository";
+import { InMemoryFileRepository } from "./file-repository/in-memory-file-repository";
+import { apiEndpoints } from "./http/http-endpoints";
+import { AsyncEventBus } from "./utils/async-event-bus";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -21,7 +21,7 @@ export class FileUploadService {
     private state: ServiceState = ServiceState.STOPPED;
 
     private httpServer: HttpApiServer | null = null;
-    private fileStore: FileStore = new InMemoryFileStore();
+    private fileRepository: FileRepository = new InMemoryFileRepository();
 
     private stateEventBus = new AsyncEventBus<ServiceState>();
 
@@ -31,7 +31,7 @@ export class FileUploadService {
         }
 
         return {
-            fileStore: this.fileStore
+            fileStore: this.fileRepository
         }
     };
 
@@ -44,7 +44,7 @@ export class FileUploadService {
             this.currentConfig = appConfig;
 
             await this.initHttpServer();
-            await this.fileStore.initialize();
+            await this.fileRepository.initialize();
 
             logger.info(`HTTP server listening on ${appConfig.httpServer.host}:${appConfig.httpServer.port}.`);
 
@@ -60,6 +60,7 @@ export class FileUploadService {
         await this.transitionTo(ServiceState.STOPPING);
 
         await this.shutdownHttpServer();
+        await this.fileRepository.cleanup();
 
         await this.transitionTo(ServiceState.STOPPED);
     }
