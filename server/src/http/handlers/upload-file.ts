@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ActionContext } from "../../domain/action-context";
+import { ActionContext } from "../../action-context/action-context";
 import * as Busboy from "busboy";
 import { OK } from "http-status-codes";
 import { logger } from "../http-endpoints";
@@ -9,7 +9,7 @@ export async function uploadFile(req: Request, res: Response, context: ActionCon
     const targetFileName = req.params.filename;
 
     busboy.on('file', async function(fieldname, file, filename) {
-        const fileWriter = await context.fileStore.getFileWriter(targetFileName);
+        const fileWriter = await context.fileRepository.getFileWriter(targetFileName);
         logger.debug(`starting upload of ${filename} as ${targetFileName}`);
 
         file.on('data', function(data) {

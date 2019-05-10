@@ -5,7 +5,7 @@ export interface AppConfig {
         port: number;
         host: string;
     },
-    fileStore: FileStoreConfig;
+    fileRepository: FileStoreConfig;
     logging: {
         level: string;
     }
@@ -23,7 +23,7 @@ export const appConfig : AppConfig = {
         port: parseOptionalNumber(process.env.UPLOADER_SERVER_PORT) || 3001,
         host: process.env.UPLOADER_SERVER_HOST || 'localhost',
     },
-    fileStore: {
+    fileRepository: {
         type: 'local_directory',
         path: process.env.UPLOADER_FILE_STORE_PATH || './data',
     },
