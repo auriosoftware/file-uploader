@@ -1,4 +1,5 @@
 import { parseOptionalNumber } from "./utils/parse-utils";
+import * as path from "path";
 
 export interface AppConfig {
     httpServer: {
@@ -25,7 +26,7 @@ export const appConfig : AppConfig = {
     },
     fileRepository: {
         type: 'local_directory',
-        path: process.env.UPLOADER_FILE_STORE_PATH || './data',
+        path: process.env.UPLOADER_FILE_STORE_PATH || path.join(__dirname, '..', 'data'),
     },
     logging: {
         level: process.env.LOGLEVEL || 'debug',

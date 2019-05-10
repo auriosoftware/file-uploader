@@ -29,3 +29,7 @@ export class ServiceNotAvailableError extends Error {
     }
 
 }
+
+export function getErrorDetails(error :Error) {
+    return error.stack || error.message;
+}

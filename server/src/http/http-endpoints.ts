@@ -6,7 +6,7 @@ import { downloadFile } from "./handlers/download-file";
 
 export const apiEndpoints: Array<HttpEndpoint> = [
     {
-        route: '/files/:filename',
+        route: '/files',
         method: 'POST',
         handler: uploadFile
     },
