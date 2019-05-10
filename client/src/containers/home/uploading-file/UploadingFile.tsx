@@ -1,34 +1,26 @@
 import React, {Ref} from 'react';
 import {connect} from "react-redux";
 import style from './UploadingFile.module.scss';
-import {UploadingFilesActions} from "../../../reducers/uploading-files/uploading-files.actions";
-import {RootState, UploadingFile, UploadingFileId} from "../../../reducers/root.state";
+import {FilesActions} from "../../../store/files/files.actions";
+import {File, FileId} from "../../../store/files/files.state";
 import {Fab, LinearProgress} from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 
-export interface PropsFromStore {
-}
-
-function mapStateToProps(state: RootState): PropsFromStore {
-    return {
-    };
-}
-
 export interface PropsFromDispatch {
-    deleteFile(fileId: UploadingFileId): void
+    deleteFile(fileId: FileId): void
 }
 
 function mapDispatchToProps(dispatch: any): PropsFromDispatch {
     return {
-        deleteFile(fileId: UploadingFileId) {
-            dispatch(UploadingFilesActions.deleteFile(fileId));
+        deleteFile(fileId: FileId) {
+            dispatch(FilesActions.deleteFile(fileId));
         }
     };
 }
 
 type Props = {
-    uploadingFile: UploadingFile
-} & PropsFromDispatch & PropsFromStore;
+    uploadingFile: File
+} & PropsFromDispatch;
 
 const Component: React.FC<Props> = (props) => {
     return (
@@ -50,4 +42,4 @@ const Component: React.FC<Props> = (props) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Component);
+export default connect(undefined, mapDispatchToProps)(Component);
