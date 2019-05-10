@@ -3,8 +3,11 @@ import {connect} from "react-redux";
 import style from './FileUploader.module.scss';
 import {Button} from "@material-ui/core";
 import Resumable from 'resumablejs';
-import {UploadingFilesActions} from "../../../reducers/uploading-files/uploading-files.actions";
-import {RootState} from "../../../reducers/root.state";
+import {
+    UpdateFileProgressPayload, UploadFilePayload,
+    UploadingFilesActions
+} from "../../../reducers/uploading-files/uploading-files.actions";
+import {RootState, UploadingFile, UploadingFileId} from "../../../reducers/root.state";
 
 declare global {
     interface Window {
@@ -17,7 +20,8 @@ export interface PropsFromStore {
 }
 
 export interface PropsFromDispatch {
-    uploadFile(file: Resumable.ResumableFile): void
+    uploadFile(file: UploadFilePayload): void
+    updateFileProgress(fileId: UploadingFileId, progress: number): void
 }
 
 function mapStateToProps(state: RootState): PropsFromStore {
@@ -26,8 +30,11 @@ function mapStateToProps(state: RootState): PropsFromStore {
 
 function mapDispatchToProps(dispatch: any): PropsFromDispatch {
     return {
-        uploadFile(file: Resumable.ResumableFile) {
+        uploadFile(file: UploadFilePayload) {
             dispatch(UploadingFilesActions.uploadFile(file));
+        },
+        updateFileProgress(fileId: UploadingFileId, progress: number) {
+            dispatch(UploadingFilesActions.updateFileProgress({fileId, progress}));
         }
     };
 }
@@ -55,14 +62,28 @@ class FileUploader extends React.Component<Props, State> {
         this.resumable.assignDrop(this.dropArea.current);
         this.resumable.assignBrowse(this.dropButton.current);
         this.resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
-            this.props.uploadFile(file);
+            this.props.uploadFile({id: file.uniqueIdentifier, name: file.fileName, size: file.size});
+            (() => {
+                let progress = 0;
+                setInterval(() => {
+                    if(progress >= 100) {
+                        return;
+                    }
+                    progress += 10;
+                    this.props.updateFileProgress(file.uniqueIdentifier, progress)
+                }, 1000);
+            })()
         });
-        this.resumable.on('fileSuccess', (file: any) => {
+        this.resumable.on('fileSuccess', (file: Resumable.ResumableFile) => {
             console.log('FILE SUCCESS!');
         });
-        this.resumable.on('fileError', (file: any) => {
+        this.resumable.on('fileError', (file: Resumable.ResumableFile) => {
             console.log('FILE ERROR!');
         });
+        this.resumable.on('fileProgress', (file: Resumable.ResumableFile) => {
+            this.props.updateFileProgress(file.uniqueIdentifier, file.progress(true));
+        });
+
     }
 
     render() {

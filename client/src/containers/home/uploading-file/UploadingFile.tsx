@@ -34,12 +34,20 @@ const Component: React.FC<Props> = (props) => {
     return (
         <div className={style.container}>
             Uploading: {props.uploadingFile.name}
-            <Fab aria-label="Delete" size={"small"} onClick={() => props.deleteFile(props.uploadingFile.id)}>
+            <Fab aria-label="Delete" size={"small"} onClick={handleDeleteFile} disabled={isUploadFinished()}>
                 <DeleteIcon />
             </Fab>
             <LinearProgress variant="determinate" value={props.uploadingFile.progress} />
         </div>
     );
+
+    function isUploadFinished(): boolean {
+        return props.uploadingFile.progress >= 100;
+    }
+
+    function handleDeleteFile() {
+        props.deleteFile(props.uploadingFile.id)
+    }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Component);

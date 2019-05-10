@@ -1,12 +1,21 @@
 import {reducerWithInitialState} from "typescript-fsa-reducers";
 import {UploadingFilesActions} from "./uploading-files.actions";
-import {RootState, UploadingFile} from "../root.state";
-import Resumable from 'resumablejs';
+import {UploadingFile} from "../root.state";
 import * as _ from 'lodash';
 
 export const uploadingFilesReducer = reducerWithInitialState<Array<UploadingFile>>([])
-    .case(UploadingFilesActions.uploadFile, (state, file: Resumable.ResumableFile) => {
-        return [...state, {id: file.uniqueIdentifier, name: file.fileName, progress: 0, size: file.size, error: ''}];
+    .case(UploadingFilesActions.uploadFile, (state, file) => {
+        return [...state, {id: file.id, name: file.name, progress: 0, size: file.size, error: ''}];
+    })
+    .case(UploadingFilesActions.updateFileProgress, (state, {fileId, progress}) => {
+        const files = _.cloneDeep(state) as Array<UploadingFile>;
+        const file = files.find((file) => file.id === fileId);
+
+        if(file) {
+            file.progress = progress
+        }
+
+        return files;
     })
     .case(UploadingFilesActions.deleteFile, (state, fileId) => {
         const files = _.cloneDeep(state);
