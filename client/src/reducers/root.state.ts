@@ -2,8 +2,10 @@ export interface RootState {
     uploadingFiles: Array<UploadingFile>
 }
 
+export type UploadingFileId = string;
+
 export interface UploadingFile {
-    id: string,
+    id: UploadingFileId,
     name: string,
     size: number,
     progress: number,

@@ -1,13 +1,12 @@
 import React, {Ref} from 'react';
 import {connect} from "react-redux";
 import style from './Home.module.scss';
-import {Button} from "@material-ui/core";
-import {RootState, UploadingFile as IUploadingFile} from "../../reducers/root.state";
+import {RootState, UploadingFile} from "../../reducers/root.state";
 import FileUploader from "./file-uploader/FileUploader";
-import UploadingFile from "./uploading-file/UploadingFile";
+import {default as UploadingFileComponent} from "./uploading-file/UploadingFile";
 
 export interface PropsFromStore {
-    uploadingFiles: Array<IUploadingFile>;
+    uploadingFiles: Array<UploadingFile>;
 }
 
 function mapStateToProps(state: RootState): PropsFromStore {
@@ -15,22 +14,18 @@ function mapStateToProps(state: RootState): PropsFromStore {
 }
 
 type Props = PropsFromStore;
-type State = {}
 
-class Home extends React.Component<Props, State> {
+const Home: React.FC<Props> = (props) => {
+    return (
+        <div className="Home">
+            <FileUploader/>
+            {renderUploadingFiles(props.uploadingFiles)}
+        </div>
+    );
 
-    componentDidMount(): void {
+    function renderUploadingFiles(uploadingFiles: Array<UploadingFile>): Array<JSX.Element> {
+        return uploadingFiles.map((file) => <UploadingFileComponent key={file.id} uploadingFile={file}/>);
     }
-
-    render() {
-        return (
-            <div className="Home">
-                <FileUploader/>
-                {this.props.uploadingFiles.map((file) => <UploadingFile key={file.id} uploadingFile={file}/>)}
-            </div>
-        );
-    }
-
-}
+};
 
 export default connect(mapStateToProps)(Home);

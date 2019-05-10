@@ -2,8 +2,9 @@ import React, {Ref} from 'react';
 import {connect} from "react-redux";
 import style from './UploadingFile.module.scss';
 import {UploadingFilesActions} from "../../../reducers/uploading-files/uploading-files.actions";
-import {RootState, UploadingFile} from "../../../reducers/root.state";
-import {LinearProgress} from "@material-ui/core";
+import {RootState, UploadingFile, UploadingFileId} from "../../../reducers/root.state";
+import {Fab, LinearProgress} from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export interface PropsFromStore {
 }
@@ -14,10 +15,14 @@ function mapStateToProps(state: RootState): PropsFromStore {
 }
 
 export interface PropsFromDispatch {
+    deleteFile(fileId: UploadingFileId): void
 }
 
 function mapDispatchToProps(dispatch: any): PropsFromDispatch {
     return {
+        deleteFile(fileId: UploadingFileId) {
+            dispatch(UploadingFilesActions.deleteFile(fileId));
+        }
     };
 }
 
@@ -28,7 +33,10 @@ type Props = {
 const Component: React.FC<Props> = (props) => {
     return (
         <div className={style.container}>
-            {props.uploadingFile.name}
+            Uploading: {props.uploadingFile.name}
+            <Fab aria-label="Delete" size={"small"} onClick={() => props.deleteFile(props.uploadingFile.id)}>
+                <DeleteIcon />
+            </Fab>
             <LinearProgress variant="determinate" value={props.uploadingFile.progress} />
         </div>
     );

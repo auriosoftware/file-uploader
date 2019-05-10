@@ -46,7 +46,7 @@ class FileUploader extends React.Component<Props, State> {
         this.dropArea = React.createRef();
         this.dropButton = React.createRef();
         this.resumable = new window.Resumable({
-            target: '/api/photo/redeem-upload-token',
+            target: '',
             query: {upload_token: 'my_token'}
         });
     }

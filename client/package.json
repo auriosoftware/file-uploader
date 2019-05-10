@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.125",
     "@types/react-redux": "^7.0.8",
     "@types/resumablejs": "^1.0.6",
     "redux-devtools": "^3.5.0"
