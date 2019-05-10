@@ -15,4 +15,10 @@ export interface UpdateFileProgressPayload {
     progress: number
 }
 
-export type UploadFilePayload = Pick<File, 'id' | 'name' | 'size'>;
+export interface UploadFilePayload {
+    id: FileId;
+    name: string;
+    size: number;
+}
+
+export type UploadFilePayloadX = Pick<File, 'id' | 'name' | 'size'>;

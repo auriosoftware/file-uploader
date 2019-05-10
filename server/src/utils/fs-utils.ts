@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 
 export function fileExists(filePath: string): Promise<boolean> {
     return new Promise((resolve) => {

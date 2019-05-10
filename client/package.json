@@ -22,8 +22,7 @@
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.0.2",
     "resumablejs": "^1.1.0",
-    "typescript": "3.4.5",
-    "typescript-fsa": "^3.0.0-beta-2",
+    "typescript-fsa": "^2.5.0",
     "typescript-fsa-reducers": "^1.2.1"
   },
   "scripts": {
@@ -50,6 +49,7 @@
   "devDependencies": {
     "@types/react-redux": "^7.0.8",
     "@types/resumablejs": "^1.0.6",
-    "redux-devtools": "^3.5.0"
+    "redux-devtools": "^3.5.0",
+    "typescript": "^3.3.3"
   }
 }

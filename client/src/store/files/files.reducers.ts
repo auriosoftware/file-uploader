@@ -1,5 +1,5 @@
 import {reducerWithInitialState} from "typescript-fsa-reducers";
-import {FilesActions} from "./files.actions";
+import { FilesActions, UploadFilePayload } from "./files.actions";
 import {File} from "./files.state";
 import * as _ from 'lodash';
 import {Success} from "typescript-fsa";
@@ -39,14 +39,16 @@ export const filesReducer = reducerWithInitialState<Array<File>>([])
 
         return files;
     })
-    .case(FilesActions.uploadFile.done, (state, action: Success<File, void>) => {
-        const files = _.cloneDeep(state) as Array<File>;
-        const file = files.find((file) => file.id === action.params.id);
+    .case(FilesActions.uploadFile.done, handleDelete);
 
-        if (file) {
-            file.status = 'done';
-        }
 
-        return files;
-    })
-;
+function handleDelete(state: Array<File>, action: Success<UploadFilePayload, void>) {
+    const files = _.cloneDeep(state) as Array<File>;
+    const file = files.find((file) => file.id === action.params.id);
+
+    if (file) {
+        file.status = 'done';
+    }
+
+    return files;
+}
