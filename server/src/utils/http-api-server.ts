@@ -22,7 +22,7 @@ export type HttpActionContextFactory = (request: Request) => Promise<ActionConte
 
 export class HttpApiServer {
 
-    private serverInstance: Server | null = null;
+    private httpServerInstance: Server | null = null;
     private express = express();
 
     constructor(private contextFactory: HttpActionContextFactory) {
@@ -76,19 +76,19 @@ export class HttpApiServer {
     }
 
     public listen(host: string, port: number) {
-        this.serverInstance = this.express.listen(port);
+        this.httpServerInstance = this.express.listen(port, host);
     }
 
     public getHttpServer(): Server {
-        if (!this.serverInstance) {
+        if (!this.httpServerInstance) {
             throw new Error('Cannot get http server instance - http server not started');
         }
-        return this.serverInstance;
+        return this.httpServerInstance;
     }
 
     public async shutdown(): Promise<void> {
-        if (!this.serverInstance) return;
-        return new Promise(resolve => this.serverInstance!.close(() => resolve()));
+        if (!this.httpServerInstance) return;
+        return new Promise(resolve => this.httpServerInstance!.close(() => resolve()));
     }
 }
 

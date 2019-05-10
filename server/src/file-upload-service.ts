@@ -5,6 +5,7 @@ import { FileRepository } from "./action-context/file-repository";
 import { InMemoryFileRepository } from "./file-repository/in-memory-file-repository";
 import { apiEndpoints } from "./http/http-endpoints";
 import { StateTracker } from "./utils/state-tracker";
+import { FileSystemRepository } from "./file-repository/file-system-repository";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -21,13 +22,13 @@ export class FileUploadService {
     private state: StateTracker<ServiceState> = new StateTracker(ServiceState.STOPPED, logger);
 
     private httpServer: HttpApiServer | null = null;
-    private fileRepository: FileRepository = new InMemoryFileRepository();
+    private fileRepository: FileRepository | null = null;
 
     private actionContextFactory: HttpActionContextFactory = async (request) => {
         this.state.assert(ServiceState.RUNNING, `Service is currently not available.`);
 
         return {
-            fileRepository: this.fileRepository
+            fileRepository: this.fileRepository!
         }
     };
 
@@ -40,6 +41,7 @@ export class FileUploadService {
             this.currentConfig = appConfig;
 
             await this.initHttpServer();
+            this.fileRepository = new FileSystemRepository(appConfig.fileRepository.path);
             await this.fileRepository.initialize();
 
             logger.info(`HTTP server listening on ${appConfig.httpServer.host}:${appConfig.httpServer.port}.`);
@@ -53,10 +55,10 @@ export class FileUploadService {
 
     public async stop(reason: string) {
         logger.info(`Service shutdown requested (reason: ${reason}).`);
-        await this.state.assert(ServiceState.STOPPING);
+        await this.state.set(ServiceState.STOPPING);
 
         await this.shutdownHttpServer();
-        await this.fileRepository.cleanup();
+        if (this.fileRepository) await this.fileRepository.cleanup();
 
         await this.state.set(ServiceState.STOPPED);
     }
