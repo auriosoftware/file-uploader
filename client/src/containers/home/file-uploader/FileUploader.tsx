@@ -6,12 +6,6 @@ import Resumable from 'resumablejs';
 import {UploadingFilesActions} from "../../../reducers/uploading-files/uploading-files.actions";
 import {RootState} from "../../../reducers/root.state";
 
-declare global {
-    interface Window {
-        Resumable: any;
-    }
-}
-
 export interface PropsFromStore {
     uploadingFiles: Array<any>;
 }
@@ -37,7 +31,7 @@ type State = {}
 
 class FileUploader extends React.Component<Props, State> {
 
-    private resumable: any;
+    private resumable: Resumable;
     private dropArea: any;
     private dropButton: any;
 
@@ -45,17 +39,17 @@ class FileUploader extends React.Component<Props, State> {
         super(props);
         this.dropArea = React.createRef();
         this.dropButton = React.createRef();
-        this.resumable = new window.Resumable({
-            target: '/api/photo/redeem-upload-token',
-            query: {upload_token: 'my_token'}
+        this.resumable = new Resumable({
+            target: '/v1/files/test',
         });
     }
 
     componentDidMount(): void {
         this.resumable.assignDrop(this.dropArea.current);
-        this.resumable.assignBrowse(this.dropButton.current);
+        this.resumable.assignBrowse(this.dropButton.current, false);
         this.resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
             this.props.uploadFile(file);
+            this.resumable.upload();
         });
         this.resumable.on('fileSuccess', (file: any) => {
             console.log('FILE SUCCESS!');
