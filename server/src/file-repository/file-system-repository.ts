@@ -56,4 +56,8 @@ export class FileSystemRepository implements FileRepository {
         await promisify(fs.unlink)(this.getRealPathOfFile(fileName));
     }
 
+    public async hasFile(fileName: string): Promise<boolean> {
+        return fileExists(this.getRealPathOfFile(fileName));
+    }
+
 }

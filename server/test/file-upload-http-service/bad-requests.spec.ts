@@ -1,8 +1,12 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
+import { FileChunksGenerator } from "../utils/file-chunks-generator";
 
 describe('FileUploadHttpService bad requests handling', () => {
 
     let testBed: FileUploadServiceTestBed;
+
+    const testFile = Buffer.from('111122223333');
+    const testChunk = new FileChunksGenerator(testFile, 'foo.txt', 4).getChunk(1);
 
     beforeEach(async () => {
         testBed = new FileUploadServiceTestBed();
@@ -56,9 +60,11 @@ describe('FileUploadHttpService bad requests handling', () => {
     });
 
     it('POST /v1/files with no "file" fields should return 400', async () => {
+
         await testBed.request()
             .post('/v1/files')
             .set('Content-Type', 'multipart\/form-data')
+            .query(testChunk.queryParams)
             .field('nope', 'lol')
             .expect(400)
             .expect(/no file uploaded/);
@@ -68,17 +74,9 @@ describe('FileUploadHttpService bad requests handling', () => {
         await testBed.request()
             .post('/v1/files')
             .set('Content-Type', 'multipart\/form-data')
+            .query(testChunk.queryParams)
             .field('file', 'somestring')
             .expect(400)
             .expect(/no file uploaded/);
-    });
-
-    it('POST /v1/files with unspecified file name should return 400', async () => {
-        await testBed.request()
-            .post('/v1/files')
-            .set('Content-Type', 'multipart\/form-data')
-            .attach('file', Buffer.alloc(1000))
-            .expect(400)
-            .expect(/filename not specified/);
     });
 });

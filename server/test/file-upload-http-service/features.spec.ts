@@ -1,6 +1,7 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
 import * as crypto from 'crypto';
 import { NOT_FOUND, OK } from 'http-status-codes';
+import { FileChunksGenerator } from "../utils/file-chunks-generator";
 
 describe('FileUploadHttpService features', () => {
     let testBed: FileUploadServiceTestBed;
@@ -9,66 +10,102 @@ describe('FileUploadHttpService features', () => {
         testBed = new FileUploadServiceTestBed();
     });
 
-    it('Should be able to upload file', async () => {
+
+    it('Should be able to upload file in single chunk', async () => {
+        const file = Buffer.alloc(40);
+        const chunks = new FileChunksGenerator(file, 'foo.txt', 50);
+
         await testBed.startService();
-        await testBed.uploadFile('test', Buffer.alloc(1000))
-            .expect(200);
+        await testBed.uploadChunk(chunks.getChunk(1)).expect(OK);
+        await testBed.downloadFile('foo.txt')
+            .expect(OK)
+            .expect(file.toString())
+
     });
 
-    describe('when text file "foo.txt" was successfully uploaded', async () => {
-        const fileContent = 'samplecontent';
+    it('Should be able to upload file made of multiple chunks', async () => {
+        const file = Buffer.from('1111222233');
+        const fileChunks = new FileChunksGenerator(file, 'foo.txt', 4);
 
-        beforeEach(async () => {
-            await testBed.startService();
-            await testBed.uploadFile('foo.txt', Buffer.from(fileContent))
-                .expect(200);
-        });
-
-        it('should be available for download', async () => {
-            await testBed.request()
-                .get('/v1/files/foo.txt')
-                .expect(200)
-                .expect('Content-Disposition', 'attachment; filename="foo.txt"')
-                .expect(fileContent);
-        });
+        await testBed.startService();
+        await testBed.uploadChunk(fileChunks.getChunk(1)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(2)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(3)).expect(OK);
+        await testBed.downloadFile('foo.txt')
+            .expect(OK)
+            .expect(file.toString())
     });
 
-    describe('when binary file "foo.bin" was successfully uploaded', async () => {
-        const fileContent = crypto.randomBytes(1000);
+    it('Should support chunks being sent out of order and redundantly', async () => {
+        const file = Buffer.from('111122223333444455');
+        const fileChunks = new FileChunksGenerator(file, 'foo.txt', 4);
 
-        beforeEach(async () => {
-            await testBed.startService();
-            await testBed.uploadFile('foo.bin', Buffer.from(fileContent))
-                .expect(200);
-        });
-
-        it('should be available for download', async () => {
-            await testBed.request()
-                .get('/v1/files/foo.bin')
-                .expect(200)
-                .expect('Content-Disposition', 'attachment; filename="foo.bin"')
-                .expect((response) => {
-                    if (response.text !== fileContent.toString()) throw new Error('Unexpected file');
-                });
-        });
+        await testBed.startService();
+        await testBed.uploadChunk(fileChunks.getChunk(5)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(1)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(3)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(2)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(4)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(2)).expect(OK);
+        await testBed.downloadFile('foo.txt')
+            .expect(OK)
+            .expect(file.toString())
     });
 
-    describe('when uploading request contains multiple files', async () => {
-        it('should only upload the first file and ignore the rest', async () => {
-            const file1 = Buffer.from('f1content');
-            const file2 = Buffer.from('f2content');
+    it('Should support all chunks being sent simultaneously', async () => {
+        const file = Buffer.from('111122223333444455');
+        const fileChunks = new FileChunksGenerator(file, 'foo.txt', 4);
 
-            await testBed.startService();
-            await testBed.request()
-                .post('/v1/files')
-                .set('Content-Type', 'multipart\/form-data')
-                .attach('file1', file1, { filename: 'f1' })
-                .attach('file2', file2, { filename: 'f2' })
-                .expect(200);
+        await testBed.startService();
 
-            await testBed.downloadFile('f1').expect(OK).expect('f1content');
-            await testBed.downloadFile('f2').expect(NOT_FOUND);
-        });
+        await Promise.all([
+            testBed.uploadChunk(fileChunks.getChunk(1)).expect(OK),
+            testBed.uploadChunk(fileChunks.getChunk(2)).expect(OK),
+            testBed.uploadChunk(fileChunks.getChunk(3)).expect(OK),
+            testBed.uploadChunk(fileChunks.getChunk(4)).expect(OK),
+            testBed.uploadChunk(fileChunks.getChunk(5)).expect(OK),
+        ]);
+        await testBed.downloadFile('foo.txt')
+            .expect(OK)
+            .expect(file.toString())
+    });
+
+    it('Should support multiple simultaneous chunk uploads for multiple files', async () => {
+        const fooFile = Buffer.alloc(8, '1');
+        const barFile = Buffer.alloc(8, '2');
+        const fooChunks = new FileChunksGenerator(fooFile, 'foo.bin', 4);
+        const barChunks = new FileChunksGenerator(barFile, 'bar.bin', 4);
+
+        await testBed.startService();
+
+        await Promise.all([
+            await testBed.uploadChunk(fooChunks.getChunk(1)).expect(OK),
+            await testBed.uploadChunk(fooChunks.getChunk(2)).expect(OK),
+            await testBed.uploadChunk(barChunks.getChunk(1)).expect(OK),
+        ]);
+        await Promise.all([
+            await testBed.uploadChunk(fooChunks.getChunk(3)).expect(OK),
+            await testBed.uploadChunk(barChunks.getChunk(2)).expect(OK),
+            await testBed.uploadChunk(barChunks.getChunk(3)).expect(OK),
+        ]);
+
+        await testBed.downloadFile('foo.bin')
+            .expect(OK)
+            .expect(fooFile.toString())
+        await testBed.downloadFile('bar.bin')
+            .expect(OK)
+            .expect(barFile.toString())
+    });
+
+    it('Should not return the file until all chunks were received', async () => {
+        const file = Buffer.from('1111222233');
+        const fileChunks = new FileChunksGenerator(file, 'foo.txt', 4);
+
+        await testBed.startService();
+        await testBed.uploadChunk(fileChunks.getChunk(1)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(3)).expect(OK);
+        await testBed.downloadFile('foo.txt')
+            .expect(NOT_FOUND)
     });
 
     describe('when maximum file size limit is set to 1000 bytes', () => {
@@ -79,14 +116,22 @@ describe('FileUploadHttpService features', () => {
         });
 
         it('should be able to upload a 1000 bytes file', async () => {
-            await testBed.uploadFile('fileWith1000bytes.bin', Buffer.alloc(1000))
-                .expect(200);
+            const file = Buffer.alloc(1000);
+            const fileChunks = new FileChunksGenerator(file, 'fileWith1000bytes.bin', 500);
+
+            await testBed.uploadChunk(fileChunks.getChunk(1)).expect(200);
+            await testBed.uploadChunk(fileChunks.getChunk(2)).expect(200);
+            await testBed.downloadFile('fileWith1000bytes.bin').expect(200);
         });
 
         it('should NOT be able to upload a 1001 bytes file', async () => {
-            await testBed.uploadFile('fileWith1001bytes.bin', Buffer.alloc(1001))
+            const file = Buffer.alloc(1001);
+            const fileChunks = new FileChunksGenerator(file, 'fileWith1001bytes.bin', 500);
+
+            await testBed.uploadChunk(fileChunks.getChunk(1))
                 .expect(400)
                 .expect(/exceeds maximum allowed size/);
+            await testBed.downloadFile('fileWith1001bytes.bin').expect(404);
         });
 
     });
