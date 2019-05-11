@@ -1,4 +1,4 @@
-import { FileRepository } from "../action-context/file-repository";
+import { FileRepository } from "./file-repository";
 import { Dictionary } from "../utils/types";
 import { Readable, Writable } from "stream";
 import { NotFoundError } from "../utils/errors";
