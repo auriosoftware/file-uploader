@@ -1,6 +1,6 @@
-import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { UserError } from "./errors";
+import * as t from 'io-ts';
+import { PathReporter } from 'io-ts/lib/PathReporter';
+import { UserError } from './errors';
 
 export function parseOptionalNumber(str?: string): number | undefined {
     if (!isDefined(str)) return undefined;
@@ -9,8 +9,7 @@ export function parseOptionalNumber(str?: string): number | undefined {
     return num;
 }
 
-
-export function isDefined<T>(value: T | null | undefined ): value is T {
+export function isDefined<T>(value: T | null | undefined): value is T {
     return value !== undefined && value !== null;
 }
 
@@ -21,6 +20,6 @@ export function parse<T>(value: unknown, validator: t.Type<T>): T {
         return validationResult.value;
     } else {
         const errors = PathReporter.report(validationResult);
-        throw new UserError(`Invalid arguments: ${errors.join('\n')}`)
+        throw new UserError(`Invalid arguments: ${errors.join('\n')}`);
     }
 }

@@ -10,7 +10,7 @@ const alignedWithColorsAndTime = format.combine(
 );
 
 const transports = [
-    new winston.transports.Console({format: alignedWithColorsAndTime}),
+    new winston.transports.Console({format: alignedWithColorsAndTime})
 ];
 
 const rootLogger = winston.createLogger({
@@ -19,9 +19,8 @@ const rootLogger = winston.createLogger({
 
 export function setLogLevel(level: string): void {
     transports.forEach(transport => transport.level = level);
-    console.log(`(Log level set to ${level})`);
+    console.log(`(Logging messages with level "${level}" and above)`);
 }
-
 
 export function getLogger(name: string): Logger {
     return rootLogger.child(name);

@@ -1,9 +1,10 @@
-import { FileUploadHttpService } from "./file-upload-http-service/file-upload-http-service";
-import { getLogger, setLogLevel } from "./utils/logger";
-import { appConfig } from "./app-config";
-import { ExpressHttpServer } from "./utils/express-http-server";
-import { FileSystemRepository } from "./file-repository/file-system-repository";
-import { getErrorDetails } from "./utils/errors";
+import { FileUploadHttpService } from './file-upload-http-service/file-upload-http-service';
+import { getLogger, setLogLevel } from './utils/logger';
+import { appConfig } from './app-config';
+import { ExpressHttpServer } from './utils/express-http-server';
+import { FileSystemRepository } from './file-repository/file-system-repository';
+import { getErrorDetails } from './utils/errors';
+import { megaBytesToBytes } from './file-upload-http-service/endpoint-handlers/handlers/upload-file';
 
 const logger = getLogger('main');
 const fileUploadService = new FileUploadHttpService();
@@ -17,6 +18,7 @@ async function main() {
         setupSignalHandlers();
 
         await fileUploadService.start({
+            maximumFileSizeInBytes: megaBytesToBytes(appConfig.fileRepository.maxFileSizeInMB),
             getExpress: async () => httpServer.getExpress(),
             getFileRepository: async () => new FileSystemRepository(appConfig.fileRepository.path)
         });
@@ -42,10 +44,10 @@ function setupSignalHandlers() {
 function uncaughtErrorHandler(error: any) {
     console.error(`Exiting due to unhandled error:`, error);
     gracefulShutdown('unhandled error')
-        .catch((error) => {
-            console.error(`Graceful shutdown failed (${getErrorDetails(error)})`);
+        .catch((shutdownError) => {
+            console.error(`Graceful shutdown failed (${getErrorDetails(shutdownError)})`);
         })
-        .finally(() => process.exit(1))
+        .finally(() => process.exit(1));
 }
 
 async function gracefulShutdown(reason: string) {

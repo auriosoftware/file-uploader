@@ -1,34 +1,32 @@
-import { parseOptionalNumber } from "./utils/parse-utils";
-import * as path from "path";
+import { parseOptionalNumber } from './utils/parse-utils';
+import * as path from 'path';
 
 export interface AppConfig {
     httpServer: {
         port: number;
         host: string;
-    },
-    fileRepository: FileStoreConfig;
+    };
+    fileRepository: FileRepositoryConfig;
     logging: {
         level: string;
-    }
+    };
 }
 
-export type FileStoreConfig = LocalFileStoreConfig;
-
-export type LocalFileStoreConfig = {
-    type: 'local_directory',
-    path: string,
+export interface FileRepositoryConfig {
+    path: string;
+    maxFileSizeInMB: number;
 }
 
-export const appConfig : AppConfig = {
+export const appConfig: AppConfig = {
     httpServer: {
         port: parseOptionalNumber(process.env.UPLOADER_SERVER_PORT) || 3001,
-        host: process.env.UPLOADER_SERVER_HOST || 'localhost',
+        host: process.env.UPLOADER_SERVER_HOST || 'localhost'
     },
     fileRepository: {
-        type: 'local_directory',
         path: process.env.UPLOADER_FILE_STORE_PATH || path.join(__dirname, '..', 'data'),
+        maxFileSizeInMB: 500
     },
     logging: {
-        level: process.env.LOGLEVEL || 'debug',
+        level: process.env.LOGLEVEL || 'debug'
     }
 };
