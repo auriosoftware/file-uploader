@@ -4,6 +4,7 @@ import { appConfig } from "./app-config";
 import { ExpressHttpServer } from "./utils/express-http-server";
 import { FileSystemRepository } from "./file-repository/file-system-repository";
 import { getErrorDetails } from "./utils/errors";
+import { megaBytesToBytes } from "./file-upload-http-service/endpoint-handlers/handlers/upload-file";
 
 const logger = getLogger('main');
 const fileUploadService = new FileUploadHttpService();
@@ -17,6 +18,7 @@ async function main() {
         setupSignalHandlers();
 
         await fileUploadService.start({
+            maximumFileSizeInBytes: megaBytesToBytes(500),
             getExpress: async () => httpServer.getExpress(),
             getFileRepository: async () => new FileSystemRepository(appConfig.fileRepository.path)
         });

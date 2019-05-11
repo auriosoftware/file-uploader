@@ -2,7 +2,7 @@ import { FileNotFoundError, FileRepository } from "./file-repository";
 import { Readable, Writable } from "stream";
 import * as fs from "fs";
 import * as path from "path";
-import { fileExists, fileIsWritable } from "../utils/fs-utils";
+import { fileExists } from "../utils/fs-utils";
 import { getErrorDetails, InternalError } from "../utils/errors";
 import { getLogger } from "../utils/logger";
 

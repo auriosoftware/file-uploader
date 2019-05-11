@@ -18,6 +18,7 @@ const logger = getLogger('FileUploadService');
 export interface DependencyInjector {
     getExpress(): Promise<Express>;
     getFileRepository(): Promise<FileRepository>;
+    maximumFileSizeInBytes?: number;
 }
 
 export class FileUploadHttpService {
@@ -27,13 +28,13 @@ export class FileUploadHttpService {
     private contextFactory: HttpRequestContextFactory<RequestContext> | null = null;
 
     public async start(injector: DependencyInjector): Promise<void> {
-        this.state.assert(ServiceState.STOPPED, 'Cannot start the service.');
+        this.state.assert(ServiceState.STOPPED, `Cannot start the service while service state is ${this.state.get()}`);
         try {
             await this.state.set(ServiceState.INITIALIZING);
 
             this.httpServer = await injector.getExpress();
             this.fileRepository = await injector.getFileRepository();
-            this.contextFactory = this.createContextFactory(this.fileRepository);
+            this.contextFactory = this.createContextFactory(this.fileRepository, injector.maximumFileSizeInBytes);
 
             addApiEndpointsToExpressServer(this.httpServer, {
                 endpoints: fileUploadHttpEndpoints,
@@ -58,7 +59,10 @@ export class FileUploadHttpService {
         await this.state.set(ServiceState.STOPPED);
     }
 
-    private createContextFactory(fileRepository: FileRepository): HttpRequestContextFactory<RequestContext> {
-        return async () => ({ fileRepository });
+    private createContextFactory(fileRepository: FileRepository, maxFileSizeInBytes?: number): HttpRequestContextFactory<RequestContext> {
+        return async () => ({
+            fileRepository,
+            maximumFileSizeInBytes: maxFileSizeInBytes
+        });
     }
 }

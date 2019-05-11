@@ -7,12 +7,3 @@ export function fileExists(filePath: string): Promise<boolean> {
         });
     });
 }
-
-export function fileIsWritable(filePath: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-        fs.access(filePath, fs.constants.W_OK, (err) => {
-            if (err) console.error(err);
-            resolve(!err);
-        });
-    });
-}
