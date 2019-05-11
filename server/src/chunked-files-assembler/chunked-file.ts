@@ -40,9 +40,9 @@ export class ChunkedFile {
 
         stream.on("end", async () => {
             this.finishedChunks[chunkData.chunkNumber] = true;
-            console.log("CHUNK", chunkData.chunkNumber, "DONE",JSON.stringify(this.finishedChunks));
-            console.log("ASSEMBLED", Object.keys(this.finishedChunks).length, "/", this.totalChunks , "CHUNKS")
-            if (Object.keys(this.finishedChunks).length === this.totalChunks) {
+            const chunksDone = Object.keys(this.finishedChunks).length;
+            this.debugLog(`${chunksDone} / ${this.totalChunks} chunks completed`);
+            if (chunksDone === this.totalChunks) {
                 await this.assembleFile();
             }
             //TODO ERROR HANDLING
@@ -51,11 +51,11 @@ export class ChunkedFile {
 
     private async assembleFile() {
 
-        logger.debug(`Last chunk received, assembling ${this.fileName}.`);
+        this.debugLog(`Final chunk received, starting file assembly`);
         const writer = await this.fileRepository.getFileWriter(this.fileName);
 
         for (let i = 1; i <= this.totalChunks; ++i) {
-            logger.debug(`Writing chunk #${i}.`);
+            this.debugLog(`Writing chunk #${i}.`);
 
             const chunkReader = await this.fileRepository.getFileReader(`.resumable-chunk.${this.fileId}.${i}`);
             chunkReader.pipe(writer, { end: false });
@@ -68,16 +68,16 @@ export class ChunkedFile {
         await this.deleteAllChunks();
         this.onCompleted.fire();
 
-        logger.debug(`"${this.fileName}" successfully assembled.`);
+        this.debugLog(`successfully assembled`);
 
         writer.end();
     }
 
     private async deleteAllChunks() {
-        logger.debug(`Deleting chunks for ${this.fileId}`);
+        this.debugLog(`Deleting all chunks`);
 
         for (let i = 1; i <= this.totalChunks; ++i) {
-            logger.debug(`Deleting chunk #${i}.`);
+            this.debugLog(`Deleting chunk #${i}`);
             await this.fileRepository.removeFile(`.resumable-chunk.${this.fileId}.${i}`);
         }
     }
@@ -85,5 +85,9 @@ export class ChunkedFile {
     private validateChunkData(chunkData: ChunkMetadata) {
         if (chunkData.fileId !== chunkData.fileId) throw new Error(`invalid fileId in chunk data, expected "${this.fileId}", was "${chunkData.fileId}"`);
         //TODO
+    }
+
+    private debugLog(message: string) {
+        logger.debug(`[${this.fileName}] ${message}`);
     }
 }

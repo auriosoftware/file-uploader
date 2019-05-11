@@ -27,7 +27,6 @@ export class InMemoryFileRepository implements FileRepository {
 
         memStream.on('end', () => {
             this.memory[fileName] = Buffer.concat(chunks);
-            console.log("WRITTEN", this.memory[fileName]);
         });
 
         return memStream;
