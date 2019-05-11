@@ -21,8 +21,7 @@
   text-align: left;
 }
 
-.statusIcon,
-.rotatingStatusIcon {
+.statusIcon {
   margin: 10px
 }
 
@@ -35,6 +34,15 @@
   }
 }
 
-.rotatingStatusIcon {
+.failed {
+  color: darkred;
+}
+
+.uploading {
+  color: darkblue;
   animation: rotating 1s linear infinite;
+}
+
+.done {
+  color: darkgreen;
 }

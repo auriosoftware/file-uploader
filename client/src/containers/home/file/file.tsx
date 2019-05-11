@@ -6,7 +6,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorIcon from '@material-ui/icons/Error';
-
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 export interface Props {
     file: File
     onAbortUpload(fileId: FileId): void
@@ -19,6 +19,7 @@ export const FileComponent = (props: Props) => {
                 <div className={style.titleRow}>
                     {renderStatusIcon()}
                     <div className={style.title}>{props.file.name}</div>
+                    {isUploadSuccessful() && renderDownloadButton()}
                     <IconButton aria-label="Clear" onClick={handleDeleteFile}>
                         <ClearIcon/>
                     </IconButton>
@@ -29,16 +30,21 @@ export const FileComponent = (props: Props) => {
     );
 
 
-
     function renderStatusIcon(): JSX.Element {
         switch (props.file.status) {
             case "done":
-                return <CheckIcon className={style.statusIcon}/>;
+                return <CheckIcon className={`${style.statusIcon} ${style.done}`}/>;
             case "failed":
-                return <ErrorIcon className={style.statusIcon}/>;
+                return <ErrorIcon className={`${style.statusIcon} ${style.failed}`}/>;
             case "uploading":
-                return <LoopIcon className={style.rotatingStatusIcon}/>;
+                return <LoopIcon className={`${style.statusIcon} ${style.uploading}`}/>;
         }
+    }
+
+    function renderDownloadButton(): JSX.Element {
+        return <IconButton aria-label="Clear" onClick={() => window.location.href=`/v1/files/${props.file.name}`}>
+            <CloudDownloadIcon/>
+        </IconButton>
     }
 
     function renderProgressBar(): JSX.Element {
@@ -49,6 +55,10 @@ export const FileComponent = (props: Props) => {
 
     function isUploadInProgress(): boolean {
         return props.file.status === 'uploading';
+    }
+
+    function isUploadSuccessful(): boolean {
+        return props.file.status === 'done';
     }
 
     function handleDeleteFile() {
