@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import style from './file-uploader.module.scss';
+import style from './file-upload-drop-box.module.scss';
 import {Button} from "@material-ui/core";
 
 interface UploadElementBinder {
@@ -13,7 +13,7 @@ interface CustomProps {
 
 type Props = CustomProps;
 
-const FileUploader = (props: Props) => {
+const FileUploadDropBox = (props: Props) => {
     const uploadButtonElement = useRef<HTMLInputElement>(null);
     const dropAreaElement = useRef<HTMLElement>(null);
 
@@ -26,14 +26,13 @@ const FileUploader = (props: Props) => {
 
     return (
         <div className="App">
-            {renderFileInput()}
             {renderDropZone()}
         </div>
     );
 
-    function renderFileInput(): JSX.Element {
+    function renderDropZone(): JSX.Element {
         return (
-            <>
+            <section className={style.dropContainer} ref={dropAreaElement}>
                 <input
                     ref={uploadButtonElement}
                     accept="*"
@@ -44,20 +43,12 @@ const FileUploader = (props: Props) => {
                 />
                 <label htmlFor="contained-button-file">
                     <Button variant="contained" component="span">
-                        Upload
+                        Click or drop a file here!
                     </Button>
                 </label>
-            </>
-        )
-    }
-
-    function renderDropZone(): JSX.Element {
-        return (
-            <section className={style.dropContainer} ref={dropAreaElement}>
-                DROP ME PLS
             </section>
         );
     }
 };
 
-export default FileUploader;
+export default FileUploadDropBox;

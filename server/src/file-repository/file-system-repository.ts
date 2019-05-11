@@ -19,7 +19,6 @@ export class FileSystemRepository implements FileRepository {
         const filePath = this.getRealPathOfFile(fileName);
 
         if (await fileExists(filePath)) {
-            logger.debug(`Opened read stream for ${filePath}`);
             return fs.createReadStream(filePath);
         } else {
             logger.debug(`Failed to read from ${filePath}`);
@@ -31,7 +30,6 @@ export class FileSystemRepository implements FileRepository {
         const filePath = this.getRealPathOfFile(fileName);
 
         try {
-            logger.debug(`Starting write stream for file ${filePath}`);
             return fs.createWriteStream(filePath);
         } catch (error) {
             throw new InternalError(`Failed to write into ${filePath}: ${getErrorDetails(error)}`);

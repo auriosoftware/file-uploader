@@ -1,57 +1,57 @@
-import React, {Ref} from 'react';
-import {connect} from "react-redux";
+import React from 'react';
 import style from './file.module.scss';
-import {FilesActions} from "../../../store/files/files.actions";
-import {File, FileId} from "../../../store/files/files.state";
-import {Fab, LinearProgress} from "@material-ui/core";
-import DeleteIcon from '@material-ui/icons/Delete';
+import { File, FileId } from "../../../store/files/files.state";
+import { Card, Grow, IconButton, LinearProgress } from "@material-ui/core";
+import ClearIcon from '@material-ui/icons/Clear';
+import CheckIcon from '@material-ui/icons/Check';
+import LoopIcon from '@material-ui/icons/Loop';
+import ErrorIcon from '@material-ui/icons/Error';
 
-export interface PropsFromDispatch {
-    deleteFile(fileId: FileId): void
+export interface Props {
+    file: File
+    onAbortUpload(fileId: FileId): void
 }
 
-function mapDispatchToProps(dispatch: any): PropsFromDispatch {
-    return {
-        deleteFile(fileId: FileId) {
-            dispatch(FilesActions.deleteFile(fileId));
-        }
-    };
-}
-
-type Props = {
-    uploadingFile: File
-} & PropsFromDispatch;
-
-const Component = (props: Props) => {
+export const FileComponent = (props: Props) => {
     return (
-        <div className={style.container} data-test="file" data-test-file-name={props.uploadingFile.name}>
-            Uploading: {props.uploadingFile.name}
-            {renderDeleteButton()}
-            {renderProgress()}
-        </div>
+        <Grow in={true}>
+            <Card className={style.rootLayout} data-test="file" data-test-file-name={props.file.name}>
+                <div className={style.titleRow}>
+                    {renderStatusIcon()}
+                    <span className={style.title}>{props.file.name}</span>
+                    <IconButton aria-label="Clear" onClick={handleDeleteFile}>
+                        <ClearIcon/>
+                    </IconButton>
+                </div>
+                {isUploadInProgress() && renderProgressBar()}
+            </Card>
+        </Grow>
     );
 
-    function renderDeleteButton(): JSX.Element {
+
+
+    function renderStatusIcon(): JSX.Element {
+        switch (props.file.status) {
+            case "done":
+                return <CheckIcon className={style.statusIcon}/>;
+            case "failed":
+                return <ErrorIcon className={style.statusIcon}/>;
+            case "uploading":
+                return <LoopIcon className={style.rotatingStatusIcon}/>;
+        }
+    }
+
+    function renderProgressBar(): JSX.Element {
         return (
-            <Fab aria-label="Delete" size={"small"} onClick={handleDeleteFile} disabled={isUploadFinished()}>
-                <DeleteIcon />
-            </Fab>
+            <LinearProgress variant="determinate" value={props.file.progress}/>
         );
     }
 
-    function renderProgress(): JSX.Element {
-        return (
-            <LinearProgress variant="determinate" value={props.uploadingFile.progress} />
-        );
-    }
-
-    function isUploadFinished(): boolean {
-        return props.uploadingFile.progress >= 100;
+    function isUploadInProgress(): boolean {
+        return props.file.status === 'uploading';
     }
 
     function handleDeleteFile() {
-        props.deleteFile(props.uploadingFile.id)
+        props.onAbortUpload(props.file.id)
     }
 };
-
-export default connect(undefined, mapDispatchToProps)(Component);

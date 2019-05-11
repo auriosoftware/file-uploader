@@ -6,6 +6,8 @@ export interface Config {
     chunkSizeInBytes: number;
     endpoint: string;
     simultaneousChunkAmount: number;
+    chunkRetryIntervalInMs: number,
+    maxChunkRetries: number,
 }
 
 
@@ -36,6 +38,8 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
             simultaneousUploads: this.config.simultaneousChunkAmount,
             chunkSize: this.config.chunkSizeInBytes,
             testChunks:false,
+            chunkRetryInterval: this.config.chunkRetryIntervalInMs,
+            maxChunkRetries: this.config.maxChunkRetries,
         });
         this.resumableList.push(resumable);
         resumable.on('error', () => {
