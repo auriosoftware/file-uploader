@@ -28,7 +28,7 @@ export class FileUploadHttpService {
     private state: StateTracker<ServiceState> = new StateTracker(ServiceState.STOPPED, logger);
     private httpServer: Express | null = null;
     private fileRepository: FileRepository | null = null;
-    private contextFactory: HttpRequestContextFactory<RequestContext> | null = null;
+    private requestContextFactory: HttpRequestContextFactory<RequestContext> | null = null;
 
     public async start(injector: DependencyInjector): Promise<void> {
         this.state.assert(ServiceState.STOPPED, `Cannot start the service while service state is ${this.state.get()}`);
@@ -37,12 +37,12 @@ export class FileUploadHttpService {
 
             this.httpServer = await injector.getExpress();
             this.fileRepository = await injector.getFileRepository();
-            this.contextFactory = this.createContextFactory(this.fileRepository, injector.maximumFileSizeInBytes);
+            this.requestContextFactory = this.createRequestContextFactory(this.fileRepository, injector.maximumFileSizeInBytes);
 
             addApiEndpointsToExpressServer(this.httpServer, {
                 endpoints: fileUploadHttpEndpoints,
                 apiVersion: 1,
-                contextFactory: this.contextFactory
+                contextFactory: this.requestContextFactory
             });
             await this.fileRepository.initialize();
 
@@ -62,7 +62,7 @@ export class FileUploadHttpService {
         await this.state.set(ServiceState.STOPPED);
     }
 
-    private createContextFactory(fileRepository: FileRepository, maxFileSizeInBytes?: number): HttpRequestContextFactory<RequestContext> {
+    private createRequestContextFactory(fileRepository: FileRepository, maxFileSizeInBytes?: number): HttpRequestContextFactory<RequestContext> {
         return async () => {
             if (this.state.get() !== ServiceState.RUNNING) {
                 logger.debug('Ignoring request while service is not running');

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { RequestContext } from '../../request-context';
+import { RequestContext } from '../request-context';
 import { OK } from 'http-status-codes';
 import * as t from 'io-ts';
-import { parse } from '../../../utils/parse-utils';
+import { parse } from '../../utils/parse-utils';
 
 interface RouteParams {
     filename: string;

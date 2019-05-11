@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { RequestContext } from '../../request-context';
+import { RequestContext } from '../request-context';
 import * as Busboy from 'busboy';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
-import { logger } from '../../http-endpoints';
-import { getErrorDetails, UserError } from '../../../utils/errors';
-import { isDefined } from '../../../utils/parse-utils';
+import { logger } from '../http-endpoints';
+import { getErrorDetails, UserError } from '../../utils/errors';
+import { isDefined } from '../../utils/parse-utils';
 
 export function megaBytesToBytes(megaBytes: number): number {
     return megaBytes * 1000000;
@@ -39,7 +39,7 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
     async function handleFile(fieldName: string, file: any, filename: string) {
         try {
             if (!isDefined(filename) || filename === '') {
-                badRequest('filename not specified');
+                return badRequest('filename not specified');
             }
 
             const fileWriteStream = await context.fileRepository.getFileWriter(filename);

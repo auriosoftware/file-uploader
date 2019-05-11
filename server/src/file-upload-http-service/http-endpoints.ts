@@ -1,7 +1,7 @@
 import { HttpEndpoint } from '../utils/express-api';
 import { getLogger } from '../utils/logger';
-import { uploadFile } from './endpoint-handlers/handlers/upload-file';
-import { downloadFile } from './endpoint-handlers/handlers/download-file';
+import { uploadFile } from './endpoint-handlers/upload-file';
+import { downloadFile } from './endpoint-handlers/download-file';
 import { RequestContext } from './request-context';
 
 export const fileUploadHttpEndpoints: Array<HttpEndpoint<RequestContext>> = [
