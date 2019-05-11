@@ -4,10 +4,13 @@ import {signal} from "../../utils/signal";
 
 export class UploadResumableElementBinder implements UploadElementBinder {
 
-   private resumable: Resumable = new Resumable({});
+   private resumable: Resumable = new Resumable({
+      generateUniqueIdentifier: () => Math.random().toString()
+   });
 
    constructor() {
       this.resumable.on('fileAdded', (resumableFile: Resumable.ResumableFile) => {
+         this.resumable.cancel();
          this.onFileAdded.fire(resumableFile.file);
       });
    }

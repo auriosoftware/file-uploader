@@ -17,7 +17,6 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     private activeUploads: Dictionary<Resumable.ResumableFile> = {};
 
     constructor(private config: Config) {
-        console.log('init resumable')
     }
 
     onFileAdded = signal<Resumable.ResumableFile>();

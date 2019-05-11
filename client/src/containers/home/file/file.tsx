@@ -18,7 +18,7 @@ export const FileComponent = (props: Props) => {
             <Card className={style.rootLayout} data-test="file" data-test-file-name={props.file.name}>
                 <div className={style.titleRow}>
                     {renderStatusIcon()}
-                    <span className={style.title}>{props.file.name}</span>
+                    <div className={style.title}>{props.file.name}</div>
                     <IconButton aria-label="Clear" onClick={handleDeleteFile}>
                         <ClearIcon/>
                     </IconButton>
