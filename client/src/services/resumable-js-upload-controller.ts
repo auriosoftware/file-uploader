@@ -1,6 +1,7 @@
 import {UploadController} from "./upload-controller";
 import Resumable from 'resumablejs';
 import {signal} from "../utils/signal";
+import { Dictionary } from "../utils/types";
 
 export interface Config {
     chunkSizeInBytes: number;
@@ -13,7 +14,7 @@ export interface Config {
 
 export class ResumableJsUploadController implements UploadController<Resumable.ResumableFile> {
 
-    private resumableList: Array<Resumable> = [];
+    private activeUploads: Dictionary<Resumable.ResumableFile> = {};
 
     constructor(private config: Config) {
         console.log('init resumable')
@@ -25,7 +26,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     onFileUploaded = signal<Resumable.ResumableFile>();
 
     public abortUpload(fileId: string): void {
-        const existingFile = this.findFileInResumableList(fileId);
+        const existingFile = this.activeUploads[fileId];
 
         if(existingFile) {
             existingFile.abort();
@@ -41,37 +42,35 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
             chunkRetryInterval: this.config.chunkRetryIntervalInMs,
             maxChunkRetries: this.config.maxChunkRetries,
         });
-        this.resumableList.push(resumable);
-        resumable.on('error', () => {
-            console.error('Something is wrong');
 
+        const removeFromActiveUploads = (file: Resumable.ResumableFile) => {
+            delete this.activeUploads[file.uniqueIdentifier];
+            resumable.removeFile(file);
+        };
+
+        resumable.on('error', (error) => {
+            console.error(`resumablejs error while uploading "${file.name}"`, error);
         });
 
         resumable.addFile(file);
 
-        resumable.on('fileAdded', (file) => {
+        resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
             this.onFileAdded.fire(file);
             resumable.upload();
-            console.log('ADDING A FILE!');
         });
-        resumable.on('fileError', this.onFileUploadFailed.fire);
-        resumable.on('fileSuccess', this.onFileUploaded.fire);
+        resumable.on('fileError', (file: Resumable.ResumableFile) => {
+            removeFromActiveUploads(file);
+            this.onFileUploadFailed.fire(file);
+        });
+        resumable.on('fileSuccess', (file: Resumable.ResumableFile) => {
+            removeFromActiveUploads(file);
+            this.onFileUploaded.fire(file);
+        });
         resumable.on('fileProgress', this.onFileProgress.fire);
+
+
     }
 
-    private findFileInResumableList(fileId: string): Resumable.ResumableFile | undefined {
-        let foundedFile: Resumable.ResumableFile | undefined;
-
-        this.resumableList.forEach((resumable) => {
-            foundedFile = resumable.files.find((file) => file.uniqueIdentifier === fileId);
-
-            if(foundedFile) {
-                return;
-            }
-        });
-
-        return foundedFile;
-    }
 
 }
 
