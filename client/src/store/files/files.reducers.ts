@@ -9,6 +9,7 @@ export const filesReducer = reducerWithInitialState<Array<File>>([])
         return [...state, {id: file.id, name: file.name, progress: 0, size: file.size, error: '', status: 'uploading'}];
     })
     .case(FilesActions.uploadFile.failed, (state, action) => {
+        console.log('uploading failed');
         const files = _.cloneDeep(state) as Array<File>;
         const file = files.find((file) => file.id === action.params.id);
 

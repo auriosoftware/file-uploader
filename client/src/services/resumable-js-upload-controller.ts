@@ -31,7 +31,6 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     }
 
     public uploadFile(file: File): void {
-        console.log('uploading a file!');
         const resumable = new Resumable({
             target: this.config.endpoint,
             simultaneousUploads: this.config.simultaneousChunkAmount,
@@ -39,6 +38,10 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
             testChunks:false,
         });
         this.resumableList.push(resumable);
+        resumable.on('error', () => {
+            console.error('Something is wrong');
+
+        });
 
         resumable.addFile(file);
 

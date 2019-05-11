@@ -13,3 +13,4 @@ export const uploadController = new ResumableJsUploadController({
 
 
 uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
+

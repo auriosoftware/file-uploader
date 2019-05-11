@@ -2,34 +2,36 @@ import React from 'react';
 import {mount, ReactWrapper} from 'enzyme';
 import App from "../app";
 import {Provider} from "react-redux";
-import {store} from "../store/store";
+import {initStore, store} from "../store/store";
 import {waitFor} from "./utils/async-helpers";
 import {uploadController} from "../resources";
 
 describe('File Upload', () => {
     let componentWrapper: ReactWrapper;
 
-    describe('when select a file via file input', () => {
+    beforeEach(() => {
+        fetch = jest.fn();
+    });
+
+    describe('when try to upload a file', () => {
         beforeEach(async() => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
-            await waitFor(1000);
-            const file = new File(['(⌐□_□)'], 'dummyValue.png', { type: 'image/png' });
-            // uploadController.uploadFile(file);
-            // i have to do this because `input.files =[file]` is not allowed
-            const inputElement = componentWrapper.find('[data-test="file-upload-input"]');
-            console.log(inputElement.debug());
-            inputElement.simulate('change', {
-                target: {
-                    files: [file]
-                }
-            });
-            await waitFor(2000);
+            await waitFor(100);
+            const file = new File(['file content'], 'dummyValue.png', { type: 'image/png' });
+
+            // componentWrapper.find('input').simulate({target: files: [file]});
+
+            uploadController.uploadFile(file);
+            await waitFor(100);
             componentWrapper.update();
         });
 
         it('should display a correct file', () => {
-            expect(true).toBe(true);
             expect(componentWrapper.exists('[data-test-file-name="dummyValue.png"]')).toBe(true);
+        });
+
+        it('should call a correct endpoint', () => {
+            expect(fetch).toHaveBeenCalledTimes(1);
         });
     });
 

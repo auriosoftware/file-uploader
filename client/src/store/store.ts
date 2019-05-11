@@ -14,9 +14,11 @@ declare global {
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const middleware = composeEnhancer(applyMiddleware(fileUploadMiddleware(uploadController)));
 
-export const store = createStore(
-    rootReducer,
-    middleware
-);
+export const store = initStore();
 
 mapUploadControllerActionsToDispatch(uploadController, store.dispatch);
+
+export function initStore() {
+    return createStore(rootReducer, middleware);
+}
+
