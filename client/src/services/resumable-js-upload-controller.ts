@@ -14,6 +14,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     private resumableList: Array<Resumable> = [];
 
     constructor(private config: Config) {
+        console.log('init resumable')
     }
 
     onFileAdded = signal<Resumable.ResumableFile>();
@@ -30,6 +31,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     }
 
     public uploadFile(file: File): void {
+        console.log('uploading a file!');
         const resumable = new Resumable({
             target: this.config.endpoint,
             simultaneousUploads: this.config.simultaneousChunkAmount,
@@ -43,6 +45,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
         resumable.on('fileAdded', (file) => {
             this.onFileAdded.fire(file);
             resumable.upload();
+            console.log('ADDING A FILE!');
         });
         resumable.on('fileError', this.onFileUploadFailed.fire);
         resumable.on('fileSuccess', this.onFileUploaded.fire);

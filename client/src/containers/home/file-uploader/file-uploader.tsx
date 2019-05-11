@@ -39,6 +39,7 @@ const FileUploader = (props: Props) => {
                     accept="*"
                     id="contained-button-file"
                     type="file"
+                    data-test="file-upload-input"
                     className={style.uploadInput}
                 />
                 <label htmlFor="contained-button-file">

@@ -24,7 +24,7 @@ type Props = {
 
 const Component = (props: Props) => {
     return (
-        <div className={style.container}>
+        <div className={style.container} data-test="file" data-test-file-name={props.uploadingFile.name}>
             Uploading: {props.uploadingFile.name}
             {renderDeleteButton()}
             {renderProgress()}
