@@ -4,6 +4,10 @@ import { UserError } from './errors';
 
 export function parseOptionalNumber(str?: string): number | undefined {
     if (!isDefined(str)) return undefined;
+    return parseNumber(str);
+}
+
+export function parseNumber(str: string): number{
     const num = parseInt(str, 10);
     if (isNaN(num)) throw new Error(`Failed to parse "${str}" as number`);
     return num;

@@ -6,6 +6,7 @@ import { StateTracker } from '../utils/state-tracker';
 import { Express } from 'express';
 import { RequestContext } from './request-context';
 import { ServiceNotAvailableError } from "../utils/errors";
+import { ResumablejsChunksAssembler } from "../resumablejs-chunks-assembler/resumablejs-chunks-assembler";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -71,7 +72,8 @@ export class FileUploadHttpService {
 
             return {
                 fileRepository,
-                maximumFileSizeInBytes: maxFileSizeInBytes
+                maximumFileSizeInBytes: maxFileSizeInBytes,
+                chunksAssembler: new ResumablejsChunksAssembler(fileRepository)
             }
         };
     }

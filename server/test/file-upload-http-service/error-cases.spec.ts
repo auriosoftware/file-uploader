@@ -47,12 +47,12 @@ describe('FileUploadHttpService bad requests handling', () => {
             .expect(/expected multipart\/form-data/);
     });
 
-    it('POST /v1/files with no form-data fields should return 400', async () => {
+    it('POST /v1/files without resumablejs arguments should return 400', async () => {
         await testBed.request()
             .post('/v1/files')
             .set('Content-Type', 'multipart\/form-data')
             .expect(400)
-            .expect(/Boundary not found/);
+            .expect(/Invalid arguments/);
     });
 
     it('POST /v1/files with no "file" fields should return 400', async () => {

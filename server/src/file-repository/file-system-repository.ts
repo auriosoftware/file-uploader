@@ -5,6 +5,7 @@ import * as path from 'path';
 import { fileExists } from '../utils/fs-utils';
 import { getErrorDetails, InternalError } from '../utils/errors';
 import { getLogger } from '../utils/logger';
+import { promisify } from "util";
 
 const logger = getLogger('FileSystemRepository');
 
@@ -18,7 +19,7 @@ export class FileSystemRepository implements FileRepository {
         const filePath = this.getRealPathOfFile(fileName);
 
         if (await fileExists(filePath)) {
-            logger.debug(`Serving file ${filePath}`);
+            logger.debug(`Opened read stream for ${filePath}`);
             return fs.createReadStream(filePath);
         } else {
             logger.debug(`Failed to read from ${filePath}`);
@@ -49,6 +50,10 @@ export class FileSystemRepository implements FileRepository {
     public async initialize(): Promise<void> {
         //TODO!
         return;
+    }
+
+    public async removeFile(fileName: string): Promise<void> {
+        await promisify(fs.unlink)(this.getRealPathOfFile(fileName));
     }
 
 }

@@ -5,5 +5,4 @@
 --inline-diffs
 --timeout 10000
 --exit
-./src/**/*.spec.ts
 ./test/**/*.spec.ts
