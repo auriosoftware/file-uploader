@@ -5,7 +5,7 @@ import {RootState} from "../../store/root.state";
 import {File} from "../../store/files/files.state";
 import FileUploader from "./file-uploader/file-uploader";
 import {default as FileComponent} from "./file/file";
-import {uploadElementBinder} from "../../index";
+import {uploadElementBinder} from "../../resources";
 
 export interface PropsFromStore {
     uploadingFiles: Array<File>;

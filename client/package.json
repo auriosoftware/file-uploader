@@ -11,6 +11,7 @@
     "@types/node": "12.0.0",
     "@types/react": "16.8.17",
     "@types/react-dom": "16.8.4",
+    "enzyme": "^3.9.0",
     "lodash": "^4.17.11",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
@@ -29,6 +30,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
+    "test:integration": "react-app-rewired test ./test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -47,9 +49,12 @@
     ]
   },
   "devDependencies": {
+    "@types/enzyme": "^3.9.1",
     "@types/react-redux": "^7.0.8",
     "@types/resumablejs": "^1.0.6",
+    "enzyme-adapter-react-16": "^1.13.0",
     "redux-devtools": "^3.5.0",
+    "redux-mock-store": "^1.5.3",
     "typescript": "^3.3.3"
   }
 }

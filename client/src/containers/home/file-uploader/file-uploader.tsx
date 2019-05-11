@@ -4,7 +4,6 @@ import {Button} from "@material-ui/core";
 
 interface UploadElementBinder {
     setDropZoneElement(htmlElement: HTMLElement): void;
-
     setFileInputElement(htmlElement: HTMLElement): void;
 }
 
