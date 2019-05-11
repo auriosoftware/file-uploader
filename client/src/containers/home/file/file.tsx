@@ -26,12 +26,24 @@ const Component = (props: Props) => {
     return (
         <div className={style.container}>
             Uploading: {props.uploadingFile.name}
+            {renderDeleteButton()}
+            {renderProgress()}
+        </div>
+    );
+
+    function renderDeleteButton(): JSX.Element {
+        return (
             <Fab aria-label="Delete" size={"small"} onClick={handleDeleteFile} disabled={isUploadFinished()}>
                 <DeleteIcon />
             </Fab>
+        );
+    }
+
+    function renderProgress(): JSX.Element {
+        return (
             <LinearProgress variant="determinate" value={props.uploadingFile.progress} />
-        </div>
-    );
+        );
+    }
 
     function isUploadFinished(): boolean {
         return props.uploadingFile.progress >= 100;
