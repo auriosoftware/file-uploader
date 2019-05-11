@@ -3,6 +3,7 @@ import { Dictionary } from '../utils/types';
 import { Readable, Writable } from 'stream';
 import { NotFoundError } from '../utils/errors';
 import MemoryStream = require('memorystream');
+import { isDefined } from "../utils/parse-utils";
 
 export class InMemoryFileRepository implements FileRepository {
     private memory: Dictionary<Buffer> = {};
@@ -26,6 +27,7 @@ export class InMemoryFileRepository implements FileRepository {
 
         memStream.on('end', () => {
             this.memory[fileName] = Buffer.concat(chunks);
+            console.log("WRITTEN", this.memory[fileName]);
         });
 
         return memStream;
@@ -41,6 +43,10 @@ export class InMemoryFileRepository implements FileRepository {
 
     public async removeFile(fileName: string): Promise<void> {
         delete this.memory[fileName];
+    }
+
+    public async hasFile(fileName: string): Promise<boolean> {
+        return isDefined(this.memory[fileName]);
     }
 
 }

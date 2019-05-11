@@ -5,6 +5,7 @@ import * as request from 'supertest';
 import { Response, SuperTest, Test } from 'supertest';
 import { FileRepository } from '../../src/file-repository/file-repository';
 import express = require('express');
+import { TestChunkQuery } from "./file-chunks-generator";
 
 export class FileUploadServiceTestBed {
 
@@ -34,6 +35,14 @@ export class FileUploadServiceTestBed {
 
     public request(): SuperTest<Test> {
         return request(this.express);
+    }
+
+    public uploadChunk(chunkData: TestChunkQuery) {
+        return this.request()
+            .post('/v1/files')
+            .set('Content-Type', 'multipart\/form-data')
+            .query(chunkData.queryParams)
+            .attach('file', chunkData.data);
     }
 
     public uploadFile(filename: string, file: Buffer) {

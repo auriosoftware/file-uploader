@@ -5,4 +5,4 @@ import * as chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 chai.should();
 
-setLogLevel('error');
+setLogLevel('debug');

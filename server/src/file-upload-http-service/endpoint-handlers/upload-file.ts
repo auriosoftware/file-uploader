@@ -6,7 +6,8 @@ import { logger } from '../http-endpoints';
 import { getErrorDetails, UserError } from '../../utils/errors';
 import { isDefined, parse, parseNumber } from '../../utils/parse-utils';
 import * as t from 'io-ts';
-import { ChunkMetadata } from "../../resumablejs-chunks-assembler/resumablejs-chunks-assembler";
+import { ChunkMetadata } from "../../chunked-files-assembler/chunked-file";
+import { query } from "winston";
 
 export function megaBytesToBytes(megaBytes: number): number {
     return megaBytes * 1000000;
@@ -40,6 +41,11 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
     const queryParams = parse(req.query, chunkParamsValidator);
     const chunkMetadata = getChunkMetadataFrom(queryParams);
 
+    if (context.maximumFileSizeInBytes && chunkMetadata.totalSize > context.maximumFileSizeInBytes) {
+        logger.debug(`File ${queryParams.resumableFilename} exceeds size limit (${context.maximumFileSizeInBytes} bytes), aborting.`);
+        throw new UserError(`File exceeds maximum allowed size (${context.maximumFileSizeInBytes} bytes)`);
+    }
+
     const worker = initWorker();
     let fileUploaded = false;
 
@@ -67,13 +73,7 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
 
             logger.debug(`Store "${chunkMetadata.fileId}" chunk ${chunkMetadata.chunkNumber}/${chunkMetadata.totalChunks}`);
 
-            if (!isDefined(filename) || filename === '') {
-                return badRequest('filename not specified');
-            }
-
             file.on('end', () => {
-                logger.debug(`Finished uploading "${filename}".`);
-
                 if ((file as any).truncated) {
                     logger.debug(`File size limit (${context.maximumFileSizeInBytes} bytes) reached while uploading ${filename}`);
                     badRequest(`File exceeds maximum allowed size (${context.maximumFileSizeInBytes} bytes)`);
@@ -115,9 +115,8 @@ function assertContentType(request: Request, expectedContentType: string) {
 
 export function getChunkMetadataFrom(params: ResumableChunkQueryParams): ChunkMetadata {
     return {
-        filename: params.resumableFilename,
+        fileName: params.resumableFilename,
         fileId: params.resumableIdentifier,
-        relativePath: params.resumableRelativePath,
         totalChunks: parseNumber(params.resumableTotalChunks),
         chunkNumber: parseNumber(params.resumableChunkNumber),
         chunkSize:parseNumber(params.resumableChunkSize),

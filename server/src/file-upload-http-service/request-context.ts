@@ -1,8 +1,8 @@
 import { FileRepository } from '../file-repository/file-repository';
-import { ResumablejsChunksAssembler } from "../resumablejs-chunks-assembler/resumablejs-chunks-assembler";
+import { ChunkedFilesAssembler } from "../chunked-files-assembler/chunked-files-assembler";
 
 export interface RequestContext {
     fileRepository: FileRepository;
-    chunksAssembler: ResumablejsChunksAssembler;
+    chunksAssembler: ChunkedFilesAssembler;
     maximumFileSizeInBytes?: number;
 }
