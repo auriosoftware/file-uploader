@@ -39,4 +39,8 @@ export class InMemoryFileRepository implements FileRepository {
         return;
     }
 
+    public async removeFile(fileName: string): Promise<void> {
+        delete this.memory[fileName];
+    }
+
 }

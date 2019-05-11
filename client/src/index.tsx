@@ -26,7 +26,7 @@ const oneMiBInBytes = 1024 * 1024;
 export const uploadController = new ResumableJsUploadController({
     endpoint: '/v1/files',
     chunkSizeInBytes: oneMiBInBytes,
-    simultaneousChunkAmount: 4
+    simultaneousChunkAmount: 1
 });
 
 uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));

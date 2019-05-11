@@ -6,6 +6,7 @@ export interface FileRepository {
     cleanup(): Promise<void>;
     getFileReader(fileName: string): Promise<Readable>;
     getFileWriter(fileName: string): Promise<Writable>;
+    removeFile(fileName: string): Promise<void>;
 }
 
 export class FileNotFoundError extends NotFoundError {
