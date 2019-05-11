@@ -10,7 +10,10 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     }
 
     onFileAdded(cb: (file: Resumable.ResumableFile) => void): void {
-        return this.resumable.on('fileAdded', cb);
+        return this.resumable.on('fileAdded', (file) => {
+            this.resumable.upload();
+            cb(file);
+        });
     }
 
     onFileProgress(cb: (file: Resumable.ResumableFile) => void): void {

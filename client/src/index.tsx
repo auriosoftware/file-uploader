@@ -17,14 +17,14 @@ declare global {
 }
 
 const sagaMiddleware = createSagaMiddleware();
-const middleware = applyMiddleware(sagaMiddleware);
+// const middleware = applyMiddleware(sagaMiddleware);
 
 // sagaMiddleware.run();
 
 const store = createStore(
     rootReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    middleware
+    // middleware
 );
 
 mapUploadControllerActionsToDispatch(uploadElementBinder, store.dispatch);
