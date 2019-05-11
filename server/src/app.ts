@@ -18,7 +18,7 @@ async function main() {
         setupSignalHandlers();
 
         await fileUploadService.start({
-            maximumFileSizeInBytes: megaBytesToBytes(500),
+            maximumFileSizeInBytes: megaBytesToBytes(appConfig.fileRepository.maxFileSizeInMB),
             getExpress: async () => httpServer.getExpress(),
             getFileRepository: async () => new FileSystemRepository(appConfig.fileRepository.path)
         });

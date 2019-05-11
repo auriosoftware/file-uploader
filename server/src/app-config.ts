@@ -6,17 +6,15 @@ export interface AppConfig {
         port: number;
         host: string;
     },
-    fileRepository: FileStoreConfig;
+    fileRepository: FileRepositoryConfig;
     logging: {
         level: string;
     }
 }
 
-export type FileStoreConfig = LocalFileStoreConfig;
-
-export type LocalFileStoreConfig = {
-    type: 'local_directory',
+export type FileRepositoryConfig = {
     path: string,
+    maxFileSizeInMB: number,
 }
 
 export const appConfig : AppConfig = {
@@ -25,8 +23,8 @@ export const appConfig : AppConfig = {
         host: process.env.UPLOADER_SERVER_HOST || 'localhost',
     },
     fileRepository: {
-        type: 'local_directory',
         path: process.env.UPLOADER_FILE_STORE_PATH || path.join(__dirname, '..', 'data'),
+        maxFileSizeInMB: 500,
     },
     logging: {
         level: process.env.LOGLEVEL || 'debug',
