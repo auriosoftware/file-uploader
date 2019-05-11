@@ -1,11 +1,11 @@
-import React, {Ref} from 'react';
+import React from 'react';
 import {connect} from "react-redux";
 import style from './Home.module.scss';
 import {RootState} from "../../store/root.state";
 import {File} from "../../store/files/files.state";
 import FileUploader from "./file-uploader/FileUploader";
 import {default as UploadingFileComponent} from "./uploading-file/UploadingFile";
-import {ResumableJsUploadController} from "../../services/resumable-js-upload-controller";
+import {uploadElementBinder} from "../../index";
 
 export interface PropsFromStore {
     uploadingFiles: Array<File>;
@@ -16,8 +16,6 @@ function mapStateToProps(state: RootState): PropsFromStore {
 }
 
 type Props = PropsFromStore;
-
-export const uploadElementBinder = new ResumableJsUploadController('/v1/files');
 
 const Home = (props: Props) => {
     return (

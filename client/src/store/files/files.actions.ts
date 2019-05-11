@@ -1,5 +1,5 @@
 import actionCreatorFactory from 'typescript-fsa';
-import {FileId, File} from "./files.state";
+import {FileId} from "./files.state";
 
 const createAction = actionCreatorFactory('UploadingFiles');
 
@@ -20,5 +20,3 @@ export interface UploadFilePayload {
     name: string;
     size: number;
 }
-
-export type UploadFilePayloadX = Pick<File, 'id' | 'name' | 'size'>;

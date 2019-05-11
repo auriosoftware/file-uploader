@@ -9,4 +9,3 @@ export const mapUploadControllerActionsToDispatch = (controller: UploadControlle
     controller.onFileUploadFailed((file) => dispatch(FilesActions.uploadFile.failed({error: new Error(), params: {size: file.size, name: file.fileName, id: file.uniqueIdentifier}})));
     controller.onFileUploaded((file) => dispatch(FilesActions.uploadFile.done({params: {name: file.fileName, id: file.uniqueIdentifier, size: file.size}, result: undefined})));
 };
-

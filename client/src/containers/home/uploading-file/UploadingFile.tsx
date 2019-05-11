@@ -22,7 +22,7 @@ type Props = {
     uploadingFile: File
 } & PropsFromDispatch;
 
-const Component: React.FC<Props> = (props) => {
+const Component = (props: Props) => {
     return (
         <div className={style.container}>
             Uploading: {props.uploadingFile.name}

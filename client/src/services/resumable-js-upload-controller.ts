@@ -1,40 +1,67 @@
 import {UploadController} from "./upload-controller";
 import Resumable from 'resumablejs';
+import {signal} from "../utils/signal";
+
+export interface Config {
+    chunkSizeInBytes: number;
+    endpoint: string;
+    simultaneousChunkAmount: number;
+}
+
 
 export class ResumableJsUploadController implements UploadController<Resumable.ResumableFile> {
 
-    private resumable: Resumable;
+    private resumableList: Array<Resumable> = [];
 
-    constructor(endpoint: string) {
-        this.resumable = new Resumable({target: endpoint});
+    constructor(private config: Config) {
     }
 
-    onFileAdded(cb: (file: Resumable.ResumableFile) => void): void {
-        return this.resumable.on('fileAdded', (file) => {
-            this.resumable.upload();
-            cb(file);
+    onFileAdded = signal<Resumable.ResumableFile>();
+    onFileProgress = signal<Resumable.ResumableFile>();
+    onFileUploadFailed = signal<Resumable.ResumableFile>();
+    onFileUploaded = signal<Resumable.ResumableFile>();
+
+    public abortUpload(fileId: string): void {
+        const existingFile = this.findFileInResumableList(fileId);
+
+        if(existingFile) {
+            existingFile.abort();
+        }
+    }
+
+    public uploadFile(file: File): void {
+        const resumable = new Resumable({
+            target: this.config.endpoint,
+            simultaneousUploads: this.config.simultaneousChunkAmount,
+            chunkSize: this.config.chunkSizeInBytes,
+            testChunks:false,
         });
+        this.resumableList.push(resumable);
+
+        resumable.addFile(file);
+
+        resumable.on('fileAdded', (file) => {
+            this.onFileAdded.fire(file);
+            resumable.upload();
+        });
+        resumable.on('fileError', this.onFileUploadFailed.fire);
+        resumable.on('fileSuccess', this.onFileUploaded.fire);
+        resumable.on('fileProgress', this.onFileProgress.fire);
     }
 
-    onFileProgress(cb: (file: Resumable.ResumableFile) => void): void {
-        return this.resumable.on('fileProgress', cb);
-    }
+    private findFileInResumableList(fileId: string): Resumable.ResumableFile | undefined {
+        let foundedFile: Resumable.ResumableFile | undefined;
 
-    onFileUploadFailed(cb: (file: Resumable.ResumableFile) => void): void {
-        return this.resumable.on('fileError', cb);
-    }
+        this.resumableList.forEach((resumable) => {
+            foundedFile = resumable.files.find((file) => file.uniqueIdentifier === fileId);
 
-    onFileUploaded(cb: (file: Resumable.ResumableFile) => void): void {
-        return this.resumable.on('fileSuccess', cb);
-    }
+            if(foundedFile) {
+                return;
+            }
+        });
 
-    setDropZoneElement(htmlElement: HTMLElement): void {
-        this.resumable.assignDrop(htmlElement);
-    }
-
-    setFileInputElement(htmlElement: HTMLElement): void {
-        const allowFolderUpload = false;
-        this.resumable.assignBrowse(htmlElement, allowFolderUpload);
+        return foundedFile;
     }
 
 }
+

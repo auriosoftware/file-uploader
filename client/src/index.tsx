@@ -4,30 +4,42 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {Provider} from 'react-redux';
-import {createStore, applyMiddleware} from "redux";
+import {createStore, applyMiddleware, compose} from "redux";
 import {rootReducer} from "./store/root.reducer";
-import createSagaMiddleware from 'redux-saga';
 import {mapUploadControllerActionsToDispatch} from "./services/redux-upload-action-dispatcher";
-import {uploadElementBinder} from "./containers/home/Home";
+import {fileUploadMiddleware} from "./store/files/files.middlewares";
+import {ResumableJsUploadController} from "./services/resumable-js-upload-controller";
+import Resumable from 'resumablejs';
+import {UploadResumableElementBinder} from "./services/upload-element-binder/upload-resumable-element-binder";
+import {UploadElementBinder} from "./services/upload-element-binder/upload-element-binder";
 
 declare global {
     interface Window {
         __REDUX_DEVTOOLS_EXTENSION__: any;
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any
     }
 }
 
-const sagaMiddleware = createSagaMiddleware();
-// const middleware = applyMiddleware(sagaMiddleware);
+export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
 
-// sagaMiddleware.run();
+const oneMiBInBytes = 1024 * 1024;
+export const uploadController = new ResumableJsUploadController({
+    endpoint: '/v1/files',
+    chunkSizeInBytes: oneMiBInBytes,
+    simultaneousChunkAmount: 4
+});
+
+uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
+
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const middleware = composeEnhancer(applyMiddleware(fileUploadMiddleware(uploadController)));
 
 const store = createStore(
     rootReducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    // middleware
+    middleware
 );
 
-mapUploadControllerActionsToDispatch(uploadElementBinder, store.dispatch);
+mapUploadControllerActionsToDispatch(uploadController, store.dispatch);
 
 ReactDOM.render(
     <Provider store={store}>
@@ -40,3 +52,4 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+

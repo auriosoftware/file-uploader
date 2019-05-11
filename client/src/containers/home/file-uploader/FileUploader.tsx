@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import style from './FileUploader.module.scss';
 import {Button} from "@material-ui/core";
 
-export interface UploadElementBinder {
+interface UploadElementBinder {
     setDropZoneElement(htmlElement: HTMLElement): void;
     setFileInputElement(htmlElement: HTMLElement): void;
 }
