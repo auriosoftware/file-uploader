@@ -1,4 +1,4 @@
-import { Logger } from "./logger";
+import { Logger } from './logger';
 
 export class StateTracker<T> {
     private currentState: T;
@@ -18,7 +18,7 @@ export class StateTracker<T> {
 
     public assert(expectedState: T, errorMessage?: string) {
         if (this.currentState === expectedState) return;
-        errorMessage = errorMessage || `Expected state ${expectedState} but current state is ${this.currentState}`
+        errorMessage = errorMessage || `Expected state ${expectedState} but current state is ${this.currentState}`;
         throw new Error(errorMessage);
     }
 }

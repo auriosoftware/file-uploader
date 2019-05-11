@@ -5,7 +5,8 @@
   "main": "src/app.ts",
   "scripts": {
     "start": "ts-node-dev ./src/app.ts",
-    "test": "mocha --opts ./test/mocha.opts ${MOCHA_ARGS}"
+    "test": "mocha --opts ./test/mocha.opts ${MOCHA_ARGS}",
+    "lint": "tslint --project tsconfig.json --fix"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,8 @@
     "mocha": "^6.1.4",
     "supertest": "^4.0.2",
     "ts-node-dev": "^1.0.0-pre.38",
+    "tslint": "^5.16.0",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.4.5",
     "winston": "^3.2.1"
   },

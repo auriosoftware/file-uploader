@@ -1,4 +1,4 @@
-import { FileUploadServiceTestBed } from "../utils/file-upload-service.testbed";
+import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
 
 describe('File upload bad requests handling', () => {
 
@@ -20,7 +20,7 @@ describe('File upload bad requests handling', () => {
         await testBed.request()
             .get('/v1/files')
             .expect(404)
-            .expect(/Cannot GET/)
+            .expect(/Cannot GET/);
     });
 
     it('POST /v1/files lacking content type should return 400', async () => {
@@ -28,7 +28,7 @@ describe('File upload bad requests handling', () => {
             .post('/v1/files')
             .send({ some: 'body' })
             .expect(400)
-            .expect(/expected multipart\/form-data/)
+            .expect(/expected multipart\/form-data/);
     });
 
     it('POST /v1/files with invalid content type should return 400', async () => {
@@ -37,7 +37,7 @@ describe('File upload bad requests handling', () => {
             .set('Content-Type', 'application/json')
             .send({ some: 'body' })
             .expect(400)
-            .expect(/expected multipart\/form-data/)
+            .expect(/expected multipart\/form-data/);
     });
 
     it('POST /v1/files with no form-data fields should return 400', async () => {
@@ -45,7 +45,7 @@ describe('File upload bad requests handling', () => {
             .post('/v1/files')
             .set('Content-Type', 'multipart\/form-data')
             .expect(400)
-            .expect(/Boundary not found/)
+            .expect(/Boundary not found/);
     });
 
     it('POST /v1/files with no "file" fields should return 400', async () => {
@@ -54,7 +54,7 @@ describe('File upload bad requests handling', () => {
             .set('Content-Type', 'multipart\/form-data')
             .field('nope', 'lol')
             .expect(400)
-            .expect(/no file uploaded/)
+            .expect(/no file uploaded/);
     });
 
     it('POST /v1/files with "file" field containing string should return 400', async () => {
@@ -63,9 +63,8 @@ describe('File upload bad requests handling', () => {
             .set('Content-Type', 'multipart\/form-data')
             .field('file', 'somestring')
             .expect(400)
-            .expect(/no file uploaded/)
+            .expect(/no file uploaded/);
     });
-
 
     it('POST /v1/files with unspecified file name should return 400', async () => {
         await testBed.request()
@@ -73,6 +72,6 @@ describe('File upload bad requests handling', () => {
             .set('Content-Type', 'multipart\/form-data')
             .attach('file', Buffer.alloc(1000))
             .expect(400)
-            .expect(/filename not specified/)
+            .expect(/filename not specified/);
     });
 });

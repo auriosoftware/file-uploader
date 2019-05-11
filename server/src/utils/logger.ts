@@ -10,7 +10,7 @@ const alignedWithColorsAndTime = format.combine(
 );
 
 const transports = [
-    new winston.transports.Console({format: alignedWithColorsAndTime}),
+    new winston.transports.Console({format: alignedWithColorsAndTime})
 ];
 
 const rootLogger = winston.createLogger({

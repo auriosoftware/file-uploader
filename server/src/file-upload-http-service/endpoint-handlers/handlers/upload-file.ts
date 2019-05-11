@@ -1,12 +1,10 @@
-import { Request, Response } from "express";
-import { RequestContext } from "../../request-context";
-import * as Busboy from "busboy";
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from "http-status-codes";
-import { logger } from "../../http-endpoints";
-import { getErrorDetails, UserError } from "../../../utils/errors";
-import { isDefined } from "../../../utils/parse-utils";
-
-export const MAX_FILENAME_LENGTH = 1000;
+import { Request, Response } from 'express';
+import { RequestContext } from '../../request-context';
+import * as Busboy from 'busboy';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
+import { logger } from '../../http-endpoints';
+import { getErrorDetails, UserError } from '../../../utils/errors';
+import { isDefined } from '../../../utils/parse-utils';
 
 export function megaBytesToBytes(megaBytes: number): number {
     return megaBytes * 1000000;
@@ -29,12 +27,12 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
                 headers: req.headers,
                 limits: {
                     fileSize: context.maximumFileSizeInBytes,
-                    files: 1,
+                    files: 1
                 }
             });
-        } catch(error) {
+        } catch (error) {
             logger.debug(`File upload failed ${getErrorDetails(error)}`);
-            throw new UserError(`Invalid POST request: ${error.message}`)
+            throw new UserError(`Invalid POST request: ${error.message}`);
         }
     }
 
@@ -60,9 +58,8 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
                 if ((file as any).truncated) {
                     logger.debug(`File size limit (${context.maximumFileSizeInBytes} bytes) reached while uploading ${filename}`);
                     fileWriteStream.destroy();
-                    //TODO properly abort file write
                     badRequest(`File exceeds maximum allowed size (${context.maximumFileSizeInBytes} bytes)`);
-                    worker.end()
+                    worker.end();
                 } else {
                     fileUploaded = true;
                     fileWriteStream.end();
@@ -89,15 +86,11 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
         if (fileUploaded) {
             res.status(OK).end();
         } else {
-            if (!res.headersSent) res.status(BAD_REQUEST).send('"file" form data field was missing or invalid - no file uploaded').end()
+            if (!res.headersSent) res.status(BAD_REQUEST).send('"file" form data field was missing or invalid - no file uploaded').end();
         }
-    }
-
-    function handleSizeLimitExceeded() {
-
     }
 }
 
 function assertContentType(request: Request, expectedContentType: string) {
-    if (!request.is(expectedContentType)) throw new UserError(`Bad content type, expected ${expectedContentType}`)
+    if (!request.is(expectedContentType)) throw new UserError(`Bad content type, expected ${expectedContentType}`);
 }

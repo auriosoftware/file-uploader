@@ -1,6 +1,6 @@
-import { FileUploadServiceTestBed } from "../utils/file-upload-service.testbed";
-import * as crypto from "crypto";
-import { NOT_FOUND, OK } from "http-status-codes";
+import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
+import * as crypto from 'crypto';
+import { NOT_FOUND, OK } from 'http-status-codes';
 
 describe('File upload', () => {
     let testBed: FileUploadServiceTestBed;
@@ -12,7 +12,7 @@ describe('File upload', () => {
     it('POST /v1/files with correct form data should succeed', async () => {
         await testBed.startService();
         await testBed.uploadFile('test', Buffer.alloc(1000))
-            .expect(200)
+            .expect(200);
     });
 
     it('GET /v1/files/test should return 404 when no such file was uploaded', async () => {
@@ -37,7 +37,7 @@ describe('File upload', () => {
                 .get('/v1/files/foo.txt')
                 .expect(200)
                 .expect('Content-Disposition', 'attachment; filename="foo.txt"')
-                .expect(fileContent)
+                .expect(fileContent);
         });
     });
 
@@ -82,8 +82,8 @@ describe('File upload', () => {
     describe('when maximum file size limit is 1000 bytes', () => {
         beforeEach(async () => {
             await testBed.startService({
-                maximumFileSizeInBytes: 1000,
-            })
+                maximumFileSizeInBytes: 1000
+            });
         });
 
         it('File upload with exactly 1000 bytes should succeed', async () => {
@@ -95,7 +95,7 @@ describe('File upload', () => {
             await testBed.uploadFile('1001bytesFile', Buffer.alloc(1001))
                 .expect(400)
                 .expect(/exceeds maximum allowed size/);
-        })
+        });
 
     });
 

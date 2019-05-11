@@ -1,10 +1,10 @@
-import { addApiEndpointsToExpressServer, HttpRequestContextFactory } from "../utils/express-api";
-import { getLogger } from "../utils/logger";
-import { FileRepository } from "../file-repository/file-repository";
-import { fileUploadHttpEndpoints } from "./http-endpoints";
-import { StateTracker } from "../utils/state-tracker";
-import { Express } from "express";
-import { RequestContext } from "./request-context";
+import { addApiEndpointsToExpressServer, HttpRequestContextFactory } from '../utils/express-api';
+import { getLogger } from '../utils/logger';
+import { FileRepository } from '../file-repository/file-repository';
+import { fileUploadHttpEndpoints } from './http-endpoints';
+import { StateTracker } from '../utils/state-tracker';
+import { Express } from 'express';
+import { RequestContext } from './request-context';
 
 export enum ServiceState {
     STOPPED = 'STOPPED',

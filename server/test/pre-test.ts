@@ -1,3 +1,3 @@
-import { setLogLevel } from "../src/utils/logger";
+import { setLogLevel } from '../src/utils/logger';
 
 setLogLevel('debug');

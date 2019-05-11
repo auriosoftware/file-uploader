@@ -1,4 +1,4 @@
-import { FileRepository } from "../file-repository/file-repository";
+import { FileRepository } from '../file-repository/file-repository';
 
 export interface RequestContext {
     fileRepository: FileRepository;

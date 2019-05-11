@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE } from 'http-status-codes';
-import { getErrorDetails, NotFoundError, ServiceNotAvailableError, UserError } from "./errors";
-import { getLogger } from "./logger";
+import { getErrorDetails, NotFoundError, ServiceNotAvailableError, UserError } from './errors';
+import { getLogger } from './logger';
 
 export type HttpMethod = 'post' | 'get' | 'put' | 'delete';
 
@@ -18,9 +18,9 @@ const logger = getLogger('HttpApiServer');
 export type HttpRequestContextFactory<CONTEXT> = (request: Request) => Promise<CONTEXT>;
 
 export interface ExpressEndpointsRegistration<CONTEXT> {
-    endpoints: Array<HttpEndpoint<CONTEXT>>,
-    contextFactory: HttpRequestContextFactory<CONTEXT>,
-    apiVersion: number,
+    endpoints: Array<HttpEndpoint<CONTEXT>>;
+    contextFactory: HttpRequestContextFactory<CONTEXT>;
+    apiVersion: number;
 }
 
 export function addApiEndpointsToExpressServer<CONTEXT>(express: Express, params: ExpressEndpointsRegistration<CONTEXT>) {
@@ -34,7 +34,7 @@ export function addApiEndpointsToExpressServer<CONTEXT>(express: Express, params
 
         express[endpoint.method](finalRoute, async (req, res) => {
             try {
-                await createEndpointHandler(endpoint, req, res)
+                await createEndpointHandler(endpoint, req, res);
             } catch (error) {
                 handleError(req, res, error);
             }
@@ -63,6 +63,3 @@ export function addApiEndpointsToExpressServer<CONTEXT>(express: Express, params
         }
     }
 }
-
-
-

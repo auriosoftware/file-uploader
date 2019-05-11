@@ -1,9 +1,9 @@
-import { DependencyInjector, FileUploadHttpService } from "../../src/file-upload-http-service/file-upload-http-service";
-import { Express } from "express";
-import { InMemoryFileRepository } from "../../src/file-repository/in-memory-file-repository";
-import * as request from "supertest";
-import { Response, SuperTest, Test } from "supertest";
-import { FileRepository } from "../../src/file-repository/file-repository";
+import { DependencyInjector, FileUploadHttpService } from '../../src/file-upload-http-service/file-upload-http-service';
+import { Express } from 'express';
+import { InMemoryFileRepository } from '../../src/file-repository/in-memory-file-repository';
+import * as request from 'supertest';
+import { Response, SuperTest, Test } from 'supertest';
+import { FileRepository } from '../../src/file-repository/file-repository';
 import express = require('express');
 
 export class FileUploadServiceTestBed {
@@ -24,7 +24,7 @@ export class FileUploadServiceTestBed {
             getExpress: async () => this.express,
             getFileRepository: async () => this.fileRepository,
             maximumFileSizeInBytes: this.maximumFileSizeInBytes,
-            ...overrideDependencies,
+            ...overrideDependencies
         });
     }
 

@@ -1,10 +1,10 @@
-import { FileNotFoundError, FileRepository } from "./file-repository";
-import { Readable, Writable } from "stream";
-import * as fs from "fs";
-import * as path from "path";
-import { fileExists } from "../utils/fs-utils";
-import { getErrorDetails, InternalError } from "../utils/errors";
-import { getLogger } from "../utils/logger";
+import { FileNotFoundError, FileRepository } from './file-repository';
+import { Readable, Writable } from 'stream';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileExists } from '../utils/fs-utils';
+import { getErrorDetails, InternalError } from '../utils/errors';
+import { getLogger } from '../utils/logger';
 
 const logger = getLogger('FileSystemRepository');
 
@@ -32,7 +32,7 @@ export class FileSystemRepository implements FileRepository {
         try {
             logger.debug(`Starting write stream for file ${filePath}`);
             return fs.createWriteStream(filePath);
-        } catch(error) {
+        } catch (error) {
             throw new InternalError(`Failed to write into ${filePath}: ${getErrorDetails(error)}`);
         }
     }
@@ -48,6 +48,5 @@ export class FileSystemRepository implements FileRepository {
     public async initialize(): Promise<void> {
         return;
     }
-
 
 }

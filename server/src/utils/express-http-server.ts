@@ -1,6 +1,6 @@
-import { Express } from "express";
+import { Express } from 'express';
 import express = require('express');
-import { promisify } from "util";
+import { promisify } from 'util';
 import { Server } from 'http';
 
 export interface ServerConfig {
@@ -16,11 +16,11 @@ export class ExpressHttpServer {
         this.express = express();
     }
 
-    getExpress() {
+    public getExpress() {
         return this.express;
     }
 
-    listen() {
+    public listen() {
         this.serverInstance = this.express.listen(this.config.port, this.config.host);
     }
 
