@@ -1,55 +1,76 @@
-import {reducerWithInitialState} from "typescript-fsa-reducers";
-import { FilesActions, UploadFilePayload } from "./files.actions";
-import {File} from "./files.state";
-import * as _ from 'lodash';
-import {Success} from "typescript-fsa";
+import { reducerWithInitialState } from "typescript-fsa-reducers";
+import { FilesActions, UpdateFileProgressPayload, UploadFilePayload } from "./files.actions";
+import { File, FileId, FilesState } from "./files.state";
+import { Failure, Success } from "typescript-fsa";
 
-export const filesReducer = reducerWithInitialState<Array<File>>([])
-    .case(FilesActions.uploadFile.started, (state, file) => {
-        return [...state, {id: file.id, name: file.name, progress: 0, size: file.size, error: '', status: 'uploading'}];
-    })
-    .case(FilesActions.uploadFile.failed, (state, action) => {
-        console.log('uploading failed');
-        const files = _.cloneDeep(state) as Array<File>;
-        const file = files.find((file) => file.id === action.params.id);
+export const filesReducer = reducerWithInitialState<FilesState>({ byId: {} })
+    .case(FilesActions.uploadFile.started, handleUploadFileStarted)
+    .case(FilesActions.uploadFile.done, handleUploadFileDone)
+    .case(FilesActions.uploadFile.failed, handleUploadFileFailed)
+    .case(FilesActions.updateFileProgress, handleProgressUpdate)
+    .case(FilesActions.deleteFile, handleDeleteFile);
 
-        if (file) {
-            file.error = action.error.message;
-            file.status = 'failed';
+function handleUploadFileStarted(state: FilesState, payload: UploadFilePayload): FilesState {
+    return {
+        byId: {
+            ...state.byId,
+            [payload.id]: {
+                id: payload.id,
+                startedAt: new Date(),
+                name: payload.name,
+                progress: 0,
+                size: payload.size,
+                error: '',
+                status: 'uploading'
+            }
         }
+    };
+}
 
-        return files;
-    })
-    .case(FilesActions.updateFileProgress, (state, {fileId, progress}) => {
-        const files = _.cloneDeep(state) as Array<File>;
-        const file = files.find((file) => file.id === fileId);
+function handleUploadFileFailed(state: FilesState, action: Failure<UploadFilePayload, Error>): FilesState {
+    return updateFile(state, action.params.id,
+        (file) => ({
+            ...file,
+            error: action.error.message,
+            status: 'failed',
+        })
+    );
+}
 
-        if (file) {
-            file.progress = progress
+function handleProgressUpdate(state: FilesState, payload: UpdateFileProgressPayload): FilesState {
+    return updateFile(state, payload.fileId, (file) => {
+        if (file.status !== 'uploading') return file;
+        return {
+            ...file,
+            progress: payload.progress
         }
+    });
+}
 
-        return files;
-    })
-    .case(FilesActions.deleteFile, (state, fileId) => {
-        const files = _.cloneDeep(state);
-        const index = files.findIndex((file) => file.id === fileId);
-
-        if (index !== -1) {
-            files.splice(index, 1);
+function handleDeleteFile(state: FilesState, fileId: FileId) {
+    const newState = {
+        ...state,
+        byId: {
+            ...state.byId
         }
+    };
+    delete newState.byId[fileId];
+    return newState;
+}
 
-        return files;
-    })
-    .case(FilesActions.uploadFile.done, handleDelete);
+function handleUploadFileDone(state: FilesState, action: Success<UploadFilePayload, void>) {
+    return updateFile(state, action.params.id, file => ({
+        ...file,
+        status: 'done'
+    }));
+}
 
-
-function handleDelete(state: Array<File>, action: Success<UploadFilePayload, void>) {
-    const files = _.cloneDeep(state) as Array<File>;
-    const file = files.find((file) => file.id === action.params.id);
-
-    if (file) {
-        file.status = 'done';
+function updateFile(state: FilesState, fileId: FileId, updateFunc: (file: File) => File): FilesState {
+    const fileToUpdate = state.byId[fileId];
+    return {
+        byId: {
+            ...state.byId,
+            [fileId]: updateFunc(fileToUpdate)
+        }
     }
-
-    return files;
 }

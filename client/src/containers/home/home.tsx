@@ -8,6 +8,7 @@ import { FileComponent } from "./file/file";
 import { uploadElementBinder } from "../../resources";
 import { Dispatch } from "redux";
 import { FilesActions } from "../../store/files/files.actions";
+import { orderedFilesListSelector } from "../../store/files/files.selectors";
 
 export interface PropsFromStore {
     files: Array<File>;
@@ -19,7 +20,9 @@ export interface PropsFromDispatch {
 
 
 function mapStateToProps(state: RootState): PropsFromStore {
-    return {files: state.files};
+    return {
+        files: orderedFilesListSelector(state)
+    };
 }
 
 function mapDispatchToProps(dispatch: Dispatch): PropsFromDispatch {
