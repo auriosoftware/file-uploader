@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import style from './FileUploader.module.scss';
+import style from './file-uploader.module.scss';
 import {Button} from "@material-ui/core";
 
 interface UploadElementBinder {

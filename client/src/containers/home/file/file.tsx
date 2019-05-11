@@ -1,6 +1,6 @@
 import React, {Ref} from 'react';
 import {connect} from "react-redux";
-import style from './UploadingFile.module.scss';
+import style from './file.module.scss';
 import {FilesActions} from "../../../store/files/files.actions";
 import {File, FileId} from "../../../store/files/files.state";
 import {Fab, LinearProgress} from "@material-ui/core";

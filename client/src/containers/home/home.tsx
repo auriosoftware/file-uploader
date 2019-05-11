@@ -1,10 +1,10 @@
 import React from 'react';
 import {connect} from "react-redux";
-import style from './Home.module.scss';
+import style from './home.module.scss';
 import {RootState} from "../../store/root.state";
 import {File} from "../../store/files/files.state";
-import FileUploader from "./file-uploader/FileUploader";
-import {default as UploadingFileComponent} from "./uploading-file/UploadingFile";
+import FileUploader from "./file-uploader/file-uploader";
+import {default as FileComponent} from "./file/file";
 import {uploadElementBinder} from "../../index";
 
 export interface PropsFromStore {
@@ -26,7 +26,7 @@ const Home = (props: Props) => {
     );
 
     function renderUploadingFiles(uploadingFiles: Array<File>): Array<JSX.Element> {
-        return uploadingFiles.map((file) => <UploadingFileComponent key={file.id} uploadingFile={file}/>);
+        return uploadingFiles.map((file) => <FileComponent key={file.id} uploadingFile={file}/>);
     }
 };
 
