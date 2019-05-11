@@ -1,4 +1,4 @@
-import { FileNotFoundError, FileRepository } from "../action-context/file-repository";
+import { FileNotFoundError, FileRepository } from "./file-repository";
 import { Readable, Writable } from "stream";
 import * as fs from "fs";
 import * as path from "path";
