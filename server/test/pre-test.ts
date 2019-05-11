@@ -1,3 +1,8 @@
 import { setLogLevel } from '../src/utils/logger';
+import * as chai from 'chai';
+import * as chaiAsPromised from "chai-as-promised";
 
-setLogLevel('debug');
+chai.use(chaiAsPromised);
+chai.should();
+
+setLogLevel('error');

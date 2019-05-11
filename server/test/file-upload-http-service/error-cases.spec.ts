@@ -1,6 +1,6 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
 
-describe('File upload bad requests handling', () => {
+describe('FileUploadHttpService bad requests handling', () => {
 
     let testBed: FileUploadServiceTestBed;
 
@@ -21,6 +21,13 @@ describe('File upload bad requests handling', () => {
             .get('/v1/files')
             .expect(404)
             .expect(/Cannot GET/);
+    });
+
+    it('GET /v1/files/test should return 404 when no such file was uploaded', async () => {
+        await testBed.request()
+            .get('/v1/files/test')
+            .expect(404)
+            .expect(/No such file: test/);
     });
 
     it('POST /v1/files lacking content type should return 400', async () => {

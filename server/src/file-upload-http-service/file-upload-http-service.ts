@@ -5,6 +5,7 @@ import { fileUploadHttpEndpoints } from './http-endpoints';
 import { StateTracker } from '../utils/state-tracker';
 import { Express } from 'express';
 import { RequestContext } from './request-context';
+import { ServiceNotAvailableError } from "../utils/errors";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -16,9 +17,11 @@ export enum ServiceState {
 const logger = getLogger('FileUploadService');
 
 export interface DependencyInjector {
-    getExpress(): Promise<Express>;
-    getFileRepository(): Promise<FileRepository>;
     maximumFileSizeInBytes?: number;
+
+    getExpress(): Promise<Express>;
+
+    getFileRepository(): Promise<FileRepository>;
 }
 
 export class FileUploadHttpService {
@@ -60,9 +63,16 @@ export class FileUploadHttpService {
     }
 
     private createContextFactory(fileRepository: FileRepository, maxFileSizeInBytes?: number): HttpRequestContextFactory<RequestContext> {
-        return async () => ({
-            fileRepository,
-            maximumFileSizeInBytes: maxFileSizeInBytes
-        });
+        return async () => {
+            if (this.state.get() !== ServiceState.RUNNING) {
+                logger.debug('Ignoring request while service is not running');
+                throw new ServiceNotAvailableError('Service currently not available, sorry!');
+            }
+
+            return {
+                fileRepository,
+                maximumFileSizeInBytes: maxFileSizeInBytes
+            }
+        };
     }
 }

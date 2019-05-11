@@ -19,7 +19,7 @@ export class FileUploadServiceTestBed {
         this.service = new FileUploadHttpService();
     }
 
-    public async startService(overrideDependencies: Partial<DependencyInjector> = {}) {
+    public async startService(overrideDependencies: Partial<DependencyInjector> = {}): Promise<void> {
         await this.service.start({
             getExpress: async () => this.express,
             getFileRepository: async () => this.fileRepository,
