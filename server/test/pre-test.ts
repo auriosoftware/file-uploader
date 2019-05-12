@@ -5,4 +5,4 @@ import * as chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
 chai.should();
 
-setLogLevel('debug');
+setLogLevel(process.env.DEBUG === 'upload_server' ? 'debug' : 'error');

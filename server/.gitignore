@@ -1,3 +1,5 @@
 .idea/
+dist/
 data/
+logs/
 node_modules

@@ -20,6 +20,7 @@ const logger = getLogger('FileUploadService');
 
 export interface DependencyInjector {
     maximumFileSizeInBytes?: number;
+    apiBasePath: string;
 
     getExpress(): Promise<Express>;
 
@@ -47,7 +48,7 @@ export class FileUploadHttpService {
                 endpoints: fileUploadHttpEndpoints,
                 contextFactory: this.requestContextFactory,
                 apiVersion: 1,
-                basePath: appConfig.httpServer.basePath,
+                basePath: injector.apiBasePath,
             });
             await this.fileRepository.initialize();
 

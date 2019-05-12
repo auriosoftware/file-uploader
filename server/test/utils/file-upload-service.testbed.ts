@@ -25,6 +25,7 @@ export class FileUploadServiceTestBed {
             getExpress: async () => this.express,
             getFileRepository: async () => this.fileRepository,
             maximumFileSizeInBytes: this.maximumFileSizeInBytes,
+            apiBasePath: '',
             ...overrideDependencies
         });
     }
