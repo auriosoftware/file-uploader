@@ -1,13 +1,13 @@
-import {applyMiddleware, compose, createStore, Store} from "redux";
-import {fileUploadMiddleware} from "./files/files.middlewares";
-import {rootReducer} from "./root.reducer";
-import {mapUploadControllerActionsToDispatch} from "../services/redux-upload-action-dispatcher";
-import {UploadController} from "../services/upload-controller";
+import { applyMiddleware, compose, createStore, Store } from 'redux';
+import { fileUploadMiddleware } from './files/files.middlewares';
+import { rootReducer } from './root.reducer';
+import { mapUploadControllerActionsToDispatch } from '../services/redux-upload-action-dispatcher';
+import { UploadController } from '../services/upload-controller';
 
 declare global {
     interface Window {
         __REDUX_DEVTOOLS_EXTENSION__: any;
-        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
     }
 }
 
@@ -21,4 +21,3 @@ export function initStore(uploadController: UploadController<any>) {
 
     mapUploadControllerActionsToDispatch(uploadController, store.dispatch);
 }
-

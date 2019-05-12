@@ -28,9 +28,9 @@
   "scripts": {
     "start": "react-app-rewired start",
     "start:dev": "REACT_APP_ENV=development react-app-rewired start",
+    "lint": "tslint --project tsconfig.json --fix",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "test:integration": "react-app-rewired test ./test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -49,12 +49,16 @@
     ]
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^0.1.3",
     "@types/enzyme": "^3.9.1",
     "@types/react-redux": "^7.0.8",
     "@types/resumablejs": "^1.0.6",
     "enzyme-adapter-react-16": "^1.13.0",
+    "nyc": "^14.1.1",
     "redux-devtools": "^3.5.0",
     "redux-mock-store": "^1.5.3",
+    "tslint": "^5.16.0",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.3.3"
   },
   "optionalDependencies": {

@@ -1,16 +1,15 @@
-import {UploadController} from "./upload-controller";
+import { UploadController } from './upload-controller';
 import Resumable from 'resumablejs';
-import {signal} from "../utils/signal";
-import { Dictionary } from "../utils/types";
+import { signal } from '../utils/signal';
+import { Dictionary } from '../utils/types';
 
 export interface Config {
     chunkSizeInBytes: number;
     endpoint: string;
     simultaneousChunkAmount: number;
-    chunkRetryIntervalInMs: number,
-    maxChunkRetries: number,
+    chunkRetryIntervalInMs: number;
+    maxChunkRetries: number;
 }
-
 
 export class ResumableJsUploadController implements UploadController<Resumable.ResumableFile> {
 
@@ -19,27 +18,27 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
     constructor(private config: Config) {
     }
 
-    onFileAdded = signal<Resumable.ResumableFile>();
-    onFileProgress = signal<Resumable.ResumableFile>();
-    onFileUploadFailed = signal<{file: Resumable.ResumableFile, message: string}>();
-    onFileUploaded = signal<Resumable.ResumableFile>();
+    public onFileAdded = signal<Resumable.ResumableFile>();
+    public onFileProgress = signal<Resumable.ResumableFile>();
+    public onFileUploadFailed = signal<{file: Resumable.ResumableFile, message: string}>();
+    public onFileUploaded = signal<Resumable.ResumableFile>();
 
     public abortUpload(fileId: string): void {
         const existingFile = this.activeUploads[fileId];
 
-        if(existingFile) {
+        if (existingFile) {
             existingFile.abort();
         }
     }
 
-    public uploadFile(file: File): void {
+    public uploadFile(fileToUpload: File): void {
         const resumable = new Resumable({
             target: this.config.endpoint,
             simultaneousUploads: this.config.simultaneousChunkAmount,
             chunkSize: this.config.chunkSizeInBytes,
-            testChunks:false,
+            testChunks: false,
             chunkRetryInterval: this.config.chunkRetryIntervalInMs,
-            maxChunkRetries: this.config.maxChunkRetries,
+            maxChunkRetries: this.config.maxChunkRetries
         });
 
         const removeFromActiveUploads = (file: Resumable.ResumableFile) => {
@@ -48,10 +47,10 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
         };
 
         resumable.on('error', (error) => {
-            console.error(`resumablejs error while uploading "${file.name}"`, error);
+            console.error(`resumablejs error while uploading "${fileToUpload.name}"`, error);
         });
 
-        resumable.addFile(file);
+        resumable.addFile(fileToUpload);
 
         resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
             this.onFileAdded.fire(file);
@@ -68,9 +67,6 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
         });
         resumable.on('fileProgress', this.onFileProgress.fire);
 
-
     }
 
-
 }
-

@@ -1,6 +1,6 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import style from './file-upload-drop-box.module.scss';
-import {Button} from "@material-ui/core";
+import { Button } from '@material-ui/core';
 
 interface UploadElementBinder {
     setDropZoneElement(htmlElement: HTMLElement): void;
@@ -8,12 +8,12 @@ interface UploadElementBinder {
 }
 
 interface CustomProps {
-    uploadElementBinder: UploadElementBinder
+    uploadElementBinder: UploadElementBinder;
 }
 
 type Props = CustomProps;
 
-const FileUploadDropBox = (props: Props) => {
+export const FileUploadDropBox = (props: Props) => {
     const uploadButtonElement = useRef<HTMLInputElement>(null);
     const dropAreaElement = useRef<HTMLElement>(null);
 
@@ -25,7 +25,7 @@ const FileUploadDropBox = (props: Props) => {
     });
 
     return (
-        <div className="App">
+        <div className='App'>
             {renderDropZone()}
         </div>
     );
@@ -35,14 +35,14 @@ const FileUploadDropBox = (props: Props) => {
             <section className={style.dropContainer} ref={dropAreaElement}>
                 <input
                     ref={uploadButtonElement}
-                    accept="*"
-                    id="contained-button-file"
-                    type="file"
-                    data-test="file-upload-input"
+                    accept='*'
+                    id='contained-button-file'
+                    type='file'
+                    data-test='file-upload-input'
                     className={style.uploadInput}
                 />
-                <label htmlFor="contained-button-file">
-                    <Button variant="contained" component="span">
+                <label htmlFor='contained-button-file'>
+                    <Button variant='contained' component='span'>
                         Click or drop a file here!
                     </Button>
                 </label>
@@ -50,5 +50,3 @@ const FileUploadDropBox = (props: Props) => {
         );
     }
 };
-
-export default FileUploadDropBox;

@@ -1,6 +1,6 @@
-import {UploadElementBinder} from "./upload-element-binder";
+import { UploadElementBinder } from './upload-element-binder';
 import Resumable from 'resumablejs';
-import {signal} from "../../utils/signal";
+import { signal } from '../../utils/signal';
 
 export class UploadResumableElementBinder implements UploadElementBinder {
 
@@ -15,13 +15,13 @@ export class UploadResumableElementBinder implements UploadElementBinder {
       });
    }
 
-   onFileAdded = signal<File>();
+   public onFileAdded = signal<File>();
 
-   setDropZoneElement(htmlElement: HTMLElement): void {
+   public setDropZoneElement(htmlElement: HTMLElement): void {
       this.resumable.assignDrop(htmlElement);
    }
 
-   setFileInputElement(htmlElement: HTMLElement): void {
+   public setFileInputElement(htmlElement: HTMLElement): void {
       const allowFolderUpload = false;
       this.resumable.assignBrowse(htmlElement, allowFolderUpload);
    }

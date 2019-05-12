@@ -1,4 +1,4 @@
-import {Config} from "./config";
+import { Config } from './config';
 
 const oneMiBInBytes = 1024 * 1024;
 
@@ -8,6 +8,6 @@ export const productionConfig: Config = {
         chunkSizeInBytes: oneMiBInBytes,
         simultaneousChunkAmount: 4,
         chunkRetryIntervalInMs: 3000,
-        maxChunkRetries: 30,
+        maxChunkRetries: 30
     }
 };

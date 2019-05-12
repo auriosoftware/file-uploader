@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
-import App from "../app";
-import { Provider } from "react-redux";
-import { store } from "../store/store";
-import { waitForAsyncActions } from "../utils/test-utils/utils/async-helpers";
-import { initTestingDependencies } from "../resources";
-import { RawFile } from "../services/redux-upload-action-dispatcher";
-import { MockUploadController } from "../utils/test-utils/utils/mock-upload-controller";
+import { Provider } from 'react-redux';
+import { store } from '../store/store';
+import { waitForAsyncActions } from '../utils/test-utils/async-helpers';
+import { initTestingDependencies } from '../resources';
+import { RawFile } from '../utils/test-utils/raw-file';
+import { MockUploadController } from '../utils/test-utils/mock-upload-controller';
+import { App } from '../app';
 
 describe('File Upload', () => {
     let componentWrapper: ReactWrapper;
@@ -254,9 +254,6 @@ describe('File Upload', () => {
             expect(componentWrapper.find('[data-test-file-name="dummyFile2.png"] [data-test-progress]').first().prop('value')).toEqual(0);
         });
 
-
     });
 
-
 });
-

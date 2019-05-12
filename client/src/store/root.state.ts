@@ -1,6 +1,5 @@
-import {FilesState} from "./files/files.state";
+import { FilesState } from './files/files.state';
 
 export interface RootState {
-    files: FilesState
+    files: FilesState;
 }
-

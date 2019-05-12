@@ -1,8 +1,8 @@
-import { Dictionary } from "../../utils/types";
+import { Dictionary } from '../../utils/types';
 
-export type FilesState = {
-    byId: Dictionary<File>
-};
+export interface FilesState {
+    byId: Dictionary<File>;
+}
 
 export type FileId = string;
 

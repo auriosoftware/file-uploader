@@ -43,18 +43,23 @@ async function main() {
     function setupSignalHandlers() {
         process.on('SIGINT', async function () {
             console.info('< INTERRUPT SIGNAL RECEIVED >');
-            try {
-                await gracefulShutdown('interrupt signal');
-                process.exit(0);
-            } catch {
-                process.exit(1);
-            }
+            await gracefulShutdown('SIGINT');
+        });
+
+        process.on('SIGTERM', async function () {
+            console.info('< TERMINATE SIGNAL RECEIVED >');
+            await gracefulShutdown('SIGTERM');
         });
     }
 
     async function gracefulShutdown(reason: string) {
-        await fileUploadService.stop(reason);
-        await httpServer.close();
+        try {
+            await fileUploadService.stop(reason);
+            await httpServer.close();
+            process.exit(0);
+        } catch {
+            process.exit(1);
+        }
     }
 
     function uncaughtErrorHandler(error: any) {

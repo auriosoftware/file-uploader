@@ -28,12 +28,3 @@ export async function isDirectory(path: string): Promise<boolean> {
         return false;
     }
 }
-
-export async function isFile(path: string): Promise<boolean> {
-    try {
-        const stats = await promisify(fs.stat)(path);
-        return stats.isFile();
-    } catch (error) {
-        return false;
-    }
-}

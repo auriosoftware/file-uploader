@@ -1,4 +1,4 @@
-import { SignalHandler } from "../utils/signal";
+import { SignalHandler } from '../utils/signal';
 
 export interface UploadController<T> {
     onFileAdded(handler: SignalHandler<T>): void;

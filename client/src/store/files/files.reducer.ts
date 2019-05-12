@@ -1,7 +1,7 @@
-import { reducerWithInitialState } from "typescript-fsa-reducers";
-import { FilesActions, UpdateFileProgressPayload, UploadFilePayload } from "./files.actions";
-import { File, FileId, FilesState } from "./files.state";
-import { Failure, Success } from "typescript-fsa";
+import { reducerWithInitialState } from 'typescript-fsa-reducers';
+import { FilesActions, UpdateFileProgressPayload, UploadFilePayload } from './files.actions';
+import { File, FileId, FilesState } from './files.state';
+import { Failure, Success } from 'typescript-fsa';
 
 export const filesReducer = reducerWithInitialState<FilesState>({ byId: {} })
     .case(FilesActions.uploadFile.started, handleUploadFileStarted)
@@ -32,13 +32,13 @@ function handleUploadFileFailed(state: FilesState, action: Failure<UploadFilePay
         (file) => ({
             ...file,
             error: action.error.message,
-            status: 'failed',
+            status: 'failed'
         })
     );
 }
 
 function handleProgressUpdate(state: FilesState, payload: UpdateFileProgressPayload): FilesState {
-    if( ! state.byId[payload.fileId]) {
+    if (!state.byId[payload.fileId]) {
         return state;
     }
 
@@ -47,7 +47,7 @@ function handleProgressUpdate(state: FilesState, payload: UpdateFileProgressPayl
         return {
             ...file,
             progress: payload.progress
-        }
+        };
     });
 }
 
@@ -72,5 +72,5 @@ function updateFile(state: FilesState, fileId: FileId, updateFunc: (file: File) 
             ...state.byId,
             [fileId]: updateFunc(fileToUpdate)
         }
-    }
+    };
 }

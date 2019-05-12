@@ -1,7 +1,7 @@
 import React from 'react';
 import style from './file.module.scss';
-import { File } from "../../../store/files/files.state";
-import { Card, Grow, IconButton, LinearProgress } from "@material-ui/core";
+import { File } from '../../../store/files/files.state';
+import { Card, Grow, IconButton, LinearProgress } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import LoopIcon from '@material-ui/icons/Loop';
@@ -10,8 +10,8 @@ import AbortedIcon from '@material-ui/icons/Cancel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 export interface Props {
-    file: File
-    onAbortUpload(): void
+    file: File;
+    onAbortUpload(): void;
     onDownload(): void;
 }
 
@@ -33,16 +33,15 @@ export const FileComponent = (props: Props) => {
         </Grow>
     );
 
-
     function renderStatusIcon(): JSX.Element {
         switch (props.file.status) {
-            case "done":
+            case 'done':
                 return <CheckIcon data-test-done-icon className={`${style.statusIcon} ${style.done}`}/>;
-            case "aborted":
+            case 'aborted':
                 return <AbortedIcon data-test-aborted-icon className={`${style.statusIcon} ${style.failed}`}/>;
-            case "failed":
+            case 'failed':
                 return <ErrorIcon data-test-failed-icon className={`${style.statusIcon} ${style.failed}`}/>;
-            case "uploading":
+            case 'uploading':
                 return <LoopIcon data-test-uploading-icon className={`${style.statusIcon} ${style.uploading}`}/>;
         }
     }
@@ -56,20 +55,20 @@ export const FileComponent = (props: Props) => {
     }
 
     function renderDownloadButton(): JSX.Element {
-        return <IconButton data-test-download-button aria-label="Download" onClick={props.onDownload}>
+        return <IconButton data-test-download-button aria-label='Download' onClick={props.onDownload}>
             <CloudDownloadIcon data-test-download-icon/>
-        </IconButton>
+        </IconButton>;
     }
 
     function renderAbortButton(): JSX.Element {
-        return <IconButton data-test-abort-button aria-label="Clear" onClick={props.onAbortUpload}>
+        return <IconButton data-test-abort-button aria-label='Clear' onClick={props.onAbortUpload}>
             <ClearIcon/>
         </IconButton>;
     }
 
     function renderProgressBar(): JSX.Element {
         return (
-            <LinearProgress data-test-progress variant="determinate" value={props.file.progress}/>
+            <LinearProgress data-test-progress variant='determinate' value={props.file.progress}/>
         );
     }
 

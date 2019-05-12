@@ -1,10 +1,10 @@
-import {UploadElementBinder} from "./services/upload-element-binder/upload-element-binder";
-import {UploadResumableElementBinder} from "./services/upload-element-binder/upload-resumable-element-binder";
-import {ResumableJsUploadController} from "./services/resumable-js-upload-controller";
-import {UploadController} from "./services/upload-controller";
-import {initStore} from "./store/store";
-import {config} from "./config/config";
-import { RawFile } from "./services/redux-upload-action-dispatcher";
+import { UploadElementBinder } from './services/upload-element-binder/upload-element-binder';
+import { UploadResumableElementBinder } from './services/upload-element-binder/upload-resumable-element-binder';
+import { ResumableJsUploadController } from './services/resumable-js-upload-controller';
+import { UploadController } from './services/upload-controller';
+import { initStore } from './store/store';
+import { config } from './config/config';
+import { RawFile } from './utils/test-utils/raw-file';
 
 export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
 
@@ -20,7 +20,7 @@ export function initProductionDependencies() {
         chunkSizeInBytes: config.upload.chunkSizeInBytes,
         simultaneousChunkAmount: config.upload.simultaneousChunkAmount,
         chunkRetryIntervalInMs: config.upload.chunkRetryIntervalInMs,
-        maxChunkRetries: config.upload.maxChunkRetries,
+        maxChunkRetries: config.upload.maxChunkRetries
     });
     initStore(uploadController);
 
