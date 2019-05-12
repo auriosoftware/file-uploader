@@ -2,10 +2,10 @@ import { DependencyInjector, FileUploadHttpService } from '../../src/file-upload
 import { Express } from 'express';
 import { InMemoryFileRepository } from '../../src/file-repository/in-memory-file-repository';
 import * as request from 'supertest';
-import { Response, SuperTest, Test } from 'supertest';
+import { SuperTest, Test } from 'supertest';
 import { FileRepository } from '../../src/file-repository/file-repository';
+import { TestChunkQuery } from './file-chunks-generator';
 import express = require('express');
-import { TestChunkQuery } from "./file-chunks-generator";
 
 export class FileUploadServiceTestBed {
 

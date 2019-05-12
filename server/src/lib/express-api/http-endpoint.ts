@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 export enum HttpMethod {
     POST = 'post',
     GET = 'get',
     PUT = 'put',
-    DELETE = 'delete',
+    DELETE = 'delete'
 }
 
 export type HttpEndpointHandler<CONTEXT> = (request: Request, response: Response, context: CONTEXT) => any;

@@ -1,5 +1,5 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
-import { FileChunksGenerator } from "../utils/file-chunks-generator";
+import { FileChunksGenerator } from '../utils/file-chunks-generator';
 
 describe('FileUploadHttpService bad requests handling', () => {
 
@@ -31,7 +31,7 @@ describe('FileUploadHttpService bad requests handling', () => {
         await testBed.request()
             .get('/v1/files/test')
             .expect(404)
-            .expect(/No such file: test/);
+            .expect(/File not found: "test"/);
     });
 
     it('POST /v1/files lacking content type should return 400', async () => {

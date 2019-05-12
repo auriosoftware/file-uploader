@@ -1,6 +1,6 @@
-import { Dictionary } from "../utils/types";
-import { FileRepository } from "../file-repository/file-repository";
-import { ChunkedFile, ChunkMetadata } from "./chunked-file";
+import { Dictionary } from '../utils/types';
+import { FileRepository } from '../file-repository/file-repository';
+import { ChunkedFile, ChunkMetadata } from './chunked-file';
 
 export class ChunkedFilesAssembler {
 

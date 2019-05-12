@@ -4,10 +4,12 @@ import { fileUploadHttpEndpoints } from './http-endpoints';
 import { StateTracker } from '../lib/state-tracker';
 import { Express } from 'express';
 import { RequestContext } from './request-context';
-import { ServiceNotAvailableError } from "../lib/errors";
-import { ChunkedFilesAssembler } from "../chunked-files-assembler/chunked-files-assembler";
-import { HttpRequestContextFactory, registerEndpointsOnExpressServer } from "../lib/express-api/express-register-endpoints";
-import { FileSystemRepository } from "../file-repository/file-system-repository";
+import { ServiceNotAvailableError } from '../lib/errors';
+import { ChunkedFilesAssembler } from '../chunked-files-assembler/chunked-files-assembler';
+import {
+    HttpRequestContextFactory,
+    registerEndpointsOnExpressServer
+} from '../lib/express-api/express-register-endpoints';
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -49,7 +51,7 @@ export class FileUploadHttpService {
                 endpoints: fileUploadHttpEndpoints,
                 contextFactory: this.requestContextFactory,
                 apiVersion: 1,
-                basePath: injector.apiBasePath,
+                basePath: injector.apiBasePath
             });
             await this.fileRepository.initialize();
 
@@ -80,7 +82,7 @@ export class FileUploadHttpService {
                 fileRepository: this.fileRepository!,
                 maximumFileSizeInBytes: injector.maximumFileSizeInBytes,
                 chunksAssembler: this.chunkedFilesAssembler!
-            }
+            };
         };
     }
 }

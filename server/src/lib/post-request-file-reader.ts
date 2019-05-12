@@ -1,16 +1,16 @@
-import { Request } from "express";
-import * as asyncBusboy from "async-busboy";
-import { isDefined } from "../utils/parse-utils";
-import { UserError } from "./errors";
+import { Request } from 'express';
+import * as asyncBusboy from 'async-busboy';
+import { isDefined } from '../utils/parse-utils';
+import { UserError } from './errors';
 
 export interface FileWithMetadata {
-    field: string,
-    file: NodeJS.ReadableStream,
-    fileName: string,
+    field: string;
+    file: NodeJS.ReadableStream;
+    fileName: string;
 }
 
 export interface Options {
-    maximumChunkSizeInBytes?: number,
+    maximumChunkSizeInBytes?: number;
 }
 
 export async function processFileInPostRequest(req: Request, options: Options, fileProcessor: (fileWithMetadata: FileWithMetadata) => Promise<void>): Promise<void> {

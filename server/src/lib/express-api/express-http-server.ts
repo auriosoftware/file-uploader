@@ -2,8 +2,8 @@ import * as express from 'express';
 import { Express } from 'express';
 import { promisify } from 'util';
 import { Server } from 'http';
-import * as helmet from "helmet";
-import { getLogger } from "../logger";
+import * as helmet from 'helmet';
+import { getLogger } from '../logger';
 
 export interface ServerConfig {
     host: string;

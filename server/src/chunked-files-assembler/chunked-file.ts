@@ -1,9 +1,8 @@
-import { Readable } from "stream";
-import { FileRepository } from "../file-repository/file-repository";
-import { getLogger } from "../lib/logger";
-import { Dictionary } from "../utils/types";
-import { signal } from "../lib/signal";
-import { pipe } from "../utils/stream-utils";
+import { FileRepository } from '../file-repository/file-repository';
+import { getLogger } from '../lib/logger';
+import { Dictionary } from '../utils/types';
+import { signal } from '../lib/signal';
+import { pipe } from '../utils/stream-utils';
 
 const logger = getLogger('ResumablejsChunksAssembler');
 
@@ -57,15 +56,14 @@ export class ChunkedFile {
         for (let i = 1; i <= this.totalChunks; ++i) {
             this.debugLog(`Writing chunk #${i}.`);
             const chunkReader = await this.chunksRepository.getFileReader(this.getChunkFileName(i));
-            await pipe(chunkReader, writer)
+            await pipe(chunkReader, writer, { end: false });
         }
+        writer.end();
 
         await this.deleteAllChunks();
         this.onCompleted.fire();
 
         this.debugLog(`successfully assembled`);
-
-        writer.end();
     }
 
     private getChunkFileName(chunkNumber: number) {
@@ -83,7 +81,7 @@ export class ChunkedFile {
 
     private validateChunkData(chunkData: ChunkMetadata) {
         if (chunkData.fileId !== chunkData.fileId) throw new Error(`invalid fileId in chunk data, expected "${this.fileId}", was "${chunkData.fileId}"`);
-        //TODO
+        // TODO
     }
 
     private debugLog(message: string) {

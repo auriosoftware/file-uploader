@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { promisify } from "util";
+import { promisify } from 'util';
 
 export function isFileReadable(filePath: string): Promise<boolean> {
     return new Promise((resolve) => {

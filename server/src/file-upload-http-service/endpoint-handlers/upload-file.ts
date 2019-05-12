@@ -4,12 +4,12 @@ import { OK } from 'http-status-codes';
 import { logger } from '../http-endpoints';
 import { getErrorDetails, InternalError, UserError } from '../../lib/errors';
 import { isDefined, parse } from '../../utils/parse-utils';
-import { ChunkMetadata } from "../../chunked-files-assembler/chunked-file";
-import { FileWithMetadata, processFileInPostRequest } from "../../lib/post-request-file-reader";
+import { ChunkMetadata } from '../../chunked-files-assembler/chunked-file';
+import { FileWithMetadata, processFileInPostRequest } from '../../lib/post-request-file-reader';
 import {
     getChunkMetadataFromResumableJsRequest,
     resumableJsRequestParamsValidator
-} from "../adapters/resumable-js-request-params-adapter";
+} from '../adapters/resumable-js-request-params-adapter';
 
 export async function uploadFile(req: Request, res: Response, context: RequestContext) {
 
@@ -40,7 +40,8 @@ export function assertFileSizeUnderLimit(chunkMetadata: ChunkMetadata, maximumSi
 
 export function assertChunkSizeUnderLimit(chunkMetadata: ChunkMetadata, maxChunkSizeInBytes: number | undefined) {
     if (isDefined(maxChunkSizeInBytes) && chunkMetadata.chunkSize > maxChunkSizeInBytes) {
-        logger.debug(`Chunk #${chunkMetadata.chunkNumber} of file "${chunkMetadata.fileName}" exceeds size limit (${maxChunkSizeInBytes} bytes), aborting.`);
+        logger.debug(`Chunk #${chunkMetadata.chunkNumber} of file "${chunkMetadata.fileName}" ` +
+            `exceeds size limit (${maxChunkSizeInBytes} bytes), aborting.`);
         throw new UserError(`File Chunk #${chunkMetadata.chunkNumber} exceeds maximum allowed chunk size (${maxChunkSizeInBytes} bytes)`);
     }
 }

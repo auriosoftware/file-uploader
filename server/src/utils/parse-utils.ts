@@ -1,7 +1,7 @@
 import * as t from 'io-ts';
 import { PathReporter } from 'io-ts/lib/PathReporter';
 import { UserError } from '../lib/errors';
-import { LogLevel } from "../lib/logger";
+import { LogLevel } from '../lib/logger';
 
 export function parseOptionalNumber(str?: string): number | undefined {
     if (!isDefined(str)) return undefined;
@@ -15,8 +15,7 @@ export function parseLogLevel(str?: string): LogLevel | undefined {
     return str as LogLevel;
 }
 
-
-export function parseNumber(str: string): number{
+export function parseNumber(str: string): number {
     const num = parseInt(str, 10);
     if (isNaN(num)) throw new Error(`Failed to parse "${str}" as number`);
     return num;

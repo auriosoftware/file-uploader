@@ -1,7 +1,6 @@
-import { ChunkMetadata } from "../../chunked-files-assembler/chunked-file";
-import { parseNumber } from "../../utils/parse-utils";
-import * as t from "io-ts";
-
+import { ChunkMetadata } from '../../chunked-files-assembler/chunked-file';
+import { parseNumber } from '../../utils/parse-utils';
+import * as t from 'io-ts';
 
 export interface ResumableJsRequestParams {
     resumableChunkNumber: string;
@@ -20,7 +19,7 @@ export const resumableJsRequestParamsValidator: t.Type<ResumableJsRequestParams>
     resumableTotalSize: t.string,
     resumableIdentifier: t.string,
     resumableFilename: t.string,
-    resumableRelativePath: t.string,
+    resumableRelativePath: t.string
 }, 'query');
 
 export function getChunkMetadataFromResumableJsRequest(params: ResumableJsRequestParams): ChunkMetadata {
@@ -30,6 +29,6 @@ export function getChunkMetadataFromResumableJsRequest(params: ResumableJsReques
         totalChunks: parseNumber(params.resumableTotalChunks),
         chunkNumber: parseNumber(params.resumableChunkNumber),
         chunkSize: parseNumber(params.resumableChunkSize),
-        totalSize: parseNumber(params.resumableTotalSize),
-    }
+        totalSize: parseNumber(params.resumableTotalSize)
+    };
 }

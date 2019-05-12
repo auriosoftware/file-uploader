@@ -1,8 +1,8 @@
-import { ResumableJsRequestParams } from "../../src/file-upload-http-service/adapters/resumable-js-request-params-adapter";
+import { ResumableJsRequestParams } from '../../src/file-upload-http-service/adapters/resumable-js-request-params-adapter';
 
 export interface TestChunkQuery {
-    data: Buffer,
-    queryParams: ResumableJsRequestParams
+    data: Buffer;
+    queryParams: ResumableJsRequestParams;
 }
 
 export class FileChunksGenerator {
@@ -15,7 +15,7 @@ export class FileChunksGenerator {
     }
 
     public getChunk(chunkNumber: number): TestChunkQuery {
-        const data = this.file.subarray((chunkNumber-1) * this.chunkSize, (chunkNumber) * this.chunkSize);
+        const data = this.file.subarray((chunkNumber - 1) * this.chunkSize, (chunkNumber) * this.chunkSize);
 
         return {
             data,
@@ -28,6 +28,6 @@ export class FileChunksGenerator {
                 resumableFilename: this.fileName,
                 resumableTotalSize: this.file.length.toString()
             }
-        }
+        };
     }
 }

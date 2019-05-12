@@ -1,16 +1,15 @@
-import { FileRepository } from './file-repository';
+import { FileNotFoundError, FileRepository } from './file-repository';
 import { Dictionary } from '../utils/types';
 import { Readable, Writable } from 'stream';
-import { NotFoundError } from '../lib/errors';
+import { isDefined } from '../utils/parse-utils';
 import MemoryStream = require('memorystream');
-import { isDefined } from "../utils/parse-utils";
 
 export class InMemoryFileRepository implements FileRepository {
     private memory: Dictionary<Buffer> = {};
 
     public async getFileReader(fileName: string): Promise<Readable> {
         const data = this.memory[fileName];
-        if (!data) throw new NotFoundError(`No such file: ${fileName}`);
+        if (!data) throw new FileNotFoundError(fileName);
         const stream = new MemoryStream();
         stream.push(data);
         stream.end();

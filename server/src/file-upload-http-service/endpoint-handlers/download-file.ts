@@ -3,6 +3,7 @@ import { RequestContext } from '../request-context';
 import { OK } from 'http-status-codes';
 import * as t from 'io-ts';
 import { parse } from '../../utils/parse-utils';
+import { pipe } from '../../utils/stream-utils';
 
 interface RouteParams {
     filename: string;
@@ -15,7 +16,9 @@ const routeParamsValidator: t.Type<RouteParams> = t.type({
 export async function downloadFile(req: Request, res: Response, context: RequestContext) {
     const params = parse(req.params, routeParamsValidator);
 
+    const sanitizedFileName = encodeURIComponent(params.filename);
+
     const reader = await context.fileRepository.getFileReader(params.filename);
     res.header('Content-Disposition', `attachment; filename="${encodeURIComponent(params.filename)}"`).status(OK);
-    reader.pipe(res);
+    await pipe(reader, res);
 }

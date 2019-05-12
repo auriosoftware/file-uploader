@@ -2,7 +2,7 @@ import { getLogger } from '../lib/logger';
 import { uploadFile } from './endpoint-handlers/upload-file';
 import { downloadFile } from './endpoint-handlers/download-file';
 import { RequestContext } from './request-context';
-import { HttpEndpoint, HttpMethod } from "../lib/express-api/http-endpoint";
+import { HttpEndpoint, HttpMethod } from '../lib/express-api/http-endpoint';
 
 export const fileUploadHttpEndpoints: Array<HttpEndpoint<RequestContext>> = [
     {

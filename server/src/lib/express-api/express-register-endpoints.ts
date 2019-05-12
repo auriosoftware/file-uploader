@@ -2,8 +2,8 @@ import { Express, Request, Response } from 'express';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE } from 'http-status-codes';
 import { getErrorDetails, NotFoundError, ServiceNotAvailableError, UserError } from '../errors';
 import { getLogger } from '../logger';
-import { stripLeadingSlash } from "../../utils/parse-utils";
-import { HttpEndpoint } from "./http-endpoint";
+import { stripLeadingSlash } from '../../utils/parse-utils';
+import { HttpEndpoint } from './http-endpoint';
 
 const logger = getLogger('registerEndpointsOnExpressServer');
 

@@ -1,5 +1,5 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
-import { NOT_FOUND, SERVICE_UNAVAILABLE } from "http-status-codes";
+import { NOT_FOUND, SERVICE_UNAVAILABLE } from 'http-status-codes';
 import { expect } from 'chai';
 
 describe('FileUploadHttpService lifecycle', () => {
@@ -10,9 +10,9 @@ describe('FileUploadHttpService lifecycle', () => {
         testBed = new FileUploadServiceTestBed();
     });
 
-    it ('should not be able to start the service when it is already running', async ()=> {
+    it ('should not be able to start the service when it is already running', async () => {
         await testBed.startService();
-        return expect(testBed.startService()).to.be.rejectedWith(Error, /Cannot start/)
+        return expect(testBed.startService()).to.be.rejectedWith(Error, /Cannot start/);
     });
 
     describe('while waiting for file repository to initialize', () => {
@@ -41,5 +41,5 @@ describe('FileUploadHttpService lifecycle', () => {
             await testBed.uploadFile('foo', Buffer.alloc(1))
                 .expect(SERVICE_UNAVAILABLE);
         });
-    })
+    });
 });
