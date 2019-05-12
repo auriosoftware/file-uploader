@@ -7,8 +7,8 @@ module.exports = {
         basePath: "/api",
     },
     fileRepository: {
-        fileUploadDirectory: '/usr/src/app/data',
-        temporaryDirectory: path.resolve(path.join('data', 'tmp')),
+        temporaryDirectory: '/usr/src/app/data/tmp',
+        fileUploadDirectory: '/usr/src/app/data/uploads',
         maxFileSizeInMB: 500
     },
     logging: {

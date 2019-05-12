@@ -1,5 +1,4 @@
 import { Readable, Writable } from 'stream';
-import { NotFoundError } from '../lib/errors';
 
 export interface FileRepository {
     initialize(): Promise<void>;
@@ -8,10 +7,4 @@ export interface FileRepository {
     removeFile(fileName: string): Promise<void>;
     getFileReader(fileName: string): Promise<Readable>;
     getFileWriter(fileName: string): Promise<Writable>;
-}
-
-export class FileNotFoundError extends NotFoundError {
-    constructor(fileName: string) {
-        super(`File not found: "${fileName}".`);
-    }
 }

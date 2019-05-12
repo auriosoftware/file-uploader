@@ -55,7 +55,7 @@ export class FileUploadHttpService {
 
             this.state.set(ServiceState.RUNNING);
         } catch (err) {
-            await this.stop('Fatal error during initialization');
+            await this.stop(`Fatal error during initialization (${err.message})`);
             throw err;
         }
     }

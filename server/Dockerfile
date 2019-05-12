@@ -15,7 +15,8 @@ RUN npm install --production
 
 COPY --from=builder /usr/src/app/dist/src ./dist
 
-RUN mkdir -p data
+RUN mkdir -p data/uploads
+RUN mkdir -p data/tmp
 RUN mkdir -p logs
 
 ENV NODE_ENV=production

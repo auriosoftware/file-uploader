@@ -11,7 +11,6 @@ export class ChunkedFilesAssembler {
     }
 
     public async writeChunk(chunkData: ChunkMetadata, stream: NodeJS.ReadableStream) {
-
         let matchingFile = this.incompleteFiles[chunkData.fileId];
 
         if (!matchingFile) {

@@ -49,13 +49,6 @@ async function storeChunk(fileWithMetadata: FileWithMetadata, chunkMetadata: Chu
     try {
         logger.debug(`Store "${chunkMetadata.fileId}" chunk ${chunkMetadata.chunkNumber}/${chunkMetadata.totalChunks}`);
 
-/*        fileWithMetadata.file.on('end', () => {
-            if ((file as any).truncated) {
-                logger.debug(`Chunk size limit (${context.maximumChunkSizeInBytes} bytes) reached while uploading ${filename}`);
-                throw new UserError(`Chunk exceeded maximum allowed size (${context.maximumChunkSizeInBytes} bytes)`);
-            }
-        });*/
-
         await context.chunksAssembler.writeChunk(chunkMetadata, fileWithMetadata.file);
     } catch (error) {
         throw new InternalError(`Internal error while uploading "${fileWithMetadata.fileName}": ${getErrorDetails(error)}'`);

@@ -15,5 +15,6 @@ services:
     ports:
       - 3001:${UPLOADER_SERVER_PORT}
     volumes:
-      - ${UPLOADER_FILES_DIR}:/usr/src/app/data
+      - ${UPLOADER_FILES_DIR}/uploaded-files:/usr/src/app/data/uploads
+      - ${UPLOADER_FILES_DIR}/tmp:/usr/src/app/data/tmp
       - ${UPLOADER_LOG_DIR}/server:/usr/src/app/logs
