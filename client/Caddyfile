@@ -1,0 +1,13 @@
+0.0.0.0:80 {
+    root /srv
+    log /logs/access.log
+    errors /logs/error.log
+    templates / .html
+    # no caching anywhere
+    header / Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+    rewrite {
+      if {path} not_starts_with /api
+      to {path} {path}/ /
+    }
+    proxy /api {$API_SERVER_HOST}
+}

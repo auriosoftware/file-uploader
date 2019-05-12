@@ -1,0 +1,19 @@
+version: '3.2'
+services:
+  client:
+    build: client
+    depends_on:
+      - server
+    ports:
+      - 80:80
+    environment:
+      API_SERVER_HOST: http://server:3001
+    volumes:
+      - ./data/logs/client:/logs
+  server:
+    build: server
+    ports:
+      - 3001:3001
+    volumes:
+      - ./data/uploaded-files:/usr/src/app/data
+      - ./data/logs/server:/usr/src/app/logs

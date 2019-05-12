@@ -55,5 +55,8 @@
     "redux-devtools": "^3.5.0",
     "redux-mock-store": "^1.5.3",
     "typescript": "^3.3.3"
+  },
+  "optionalDependencies": {
+    "fsevents": "*"
   }
 }

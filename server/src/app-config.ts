@@ -20,7 +20,7 @@ export interface AppConfig {
 export const appConfig: AppConfig = {
     httpServer: {
         port: parseOptionalNumber(process.env.UPLOADER_SERVER_PORT) || 3001,
-        host: process.env.UPLOADER_SERVER_HOST || 'localhost',
+        host: process.env.UPLOADER_SERVER_HOST || '0.0.0.0',
         basePath: '/api'
     },
     fileRepository: {

@@ -19,6 +19,7 @@ async function main() {
 
         await fileUploadService.start({
             maximumFileSizeInBytes: megaBytesToBytes(appConfig.fileRepository.maxFileSizeInMB),
+            apiBasePath: appConfig.httpServer.basePath,
             getExpress: async () => httpServer.getExpress(),
             getFileRepository: async () => new FileSystemRepository(appConfig.fileRepository.path)
         });
