@@ -42,7 +42,7 @@ export class FileUploadHttpService {
 
             this.httpServer = await injector.getExpress();
             this.fileRepository = await injector.getFileUploadRepository();
-            this.chunkedFilesAssembler = new ChunkedFilesAssembler(await injector.getChunksRepository());
+            this.chunkedFilesAssembler = new ChunkedFilesAssembler(await injector.getChunksRepository(), this.fileRepository);
             this.requestContextFactory = this.createRequestContextFactory(injector);
 
             registerEndpointsOnExpressServer(this.httpServer, {
@@ -55,7 +55,7 @@ export class FileUploadHttpService {
 
             this.state.set(ServiceState.RUNNING);
         } catch (err) {
-            await this.stop('Fatal error during initialization');
+            await this.stop(`Fatal error during initialization (${err.message})`);
             throw err;
         }
     }

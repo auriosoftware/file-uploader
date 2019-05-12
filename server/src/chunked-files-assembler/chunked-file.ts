@@ -25,16 +25,16 @@ export class ChunkedFile {
     private readonly chunkSize: number;
     private readonly totalChunks: number;
 
-    constructor(chunkData: ChunkMetadata, private fileRepository: FileRepository) {
+    constructor(chunkData: ChunkMetadata, private chunksRepository: FileRepository, private fileRepository: FileRepository) {
         this.fileName = chunkData.fileName;
         this.fileId = chunkData.fileId;
         this.chunkSize = chunkData.chunkSize;
         this.totalChunks = chunkData.totalChunks;
     }
 
-    public async writeChunk(chunkData: ChunkMetadata, stream: Readable) {
+    public async writeChunk(chunkData: ChunkMetadata, stream: NodeJS.ReadableStream) {
         this.validateChunkData(chunkData);
-        const writer = await this.fileRepository.getFileWriter(`.resumable-chunk.${this.fileId}.${chunkData.chunkNumber}`);
+        const writer = await this.chunksRepository.getFileWriter(`.resumable-chunk.${this.fileId}.${chunkData.chunkNumber}`);
 
         await pipe(stream, writer);
         await this.handleChunkFinished(chunkData);
@@ -57,7 +57,7 @@ export class ChunkedFile {
         for (let i = 1; i <= this.totalChunks; ++i) {
             this.debugLog(`Writing chunk #${i}.`);
 
-            const chunkReader = await this.fileRepository.getFileReader(`.resumable-chunk.${this.fileId}.${i}`);
+            const chunkReader = await this.chunksRepository.getFileReader(`.resumable-chunk.${this.fileId}.${i}`);
             const promise = new Promise((resolve, reject) => {
                 chunkReader.on('end', resolve);
                 chunkReader.on('error', reject);
@@ -79,7 +79,7 @@ export class ChunkedFile {
 
         for (let i = 1; i <= this.totalChunks; ++i) {
             this.debugLog(`Deleting chunk #${i}`);
-            await this.fileRepository.removeFile(`.resumable-chunk.${this.fileId}.${i}`);
+            await this.chunksRepository.removeFile(`.resumable-chunk.${this.fileId}.${i}`);
         }
     }
 

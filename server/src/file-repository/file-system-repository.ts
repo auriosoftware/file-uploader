@@ -2,7 +2,7 @@ import { FileRepository } from './file-repository';
 import { Readable, Writable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileExists } from '../utils/fs-utils';
+import { isDirectoryWritable, isFileReadable } from '../utils/fs-utils';
 import { getLogger } from '../lib/logger';
 import { promisify } from "util";
 
@@ -29,13 +29,13 @@ export class FileSystemRepository implements FileRepository {
     }
 
     public async cleanup(): Promise<void> {
-        //TODO!
         return;
     }
 
     public async initialize(): Promise<void> {
-        //TODO!
-        return;
+        if (!await isDirectoryWritable(this.basePath)) {
+            throw new Error(`Cannot initialize file repository: Cannot write into directory ${this.basePath}`);
+        }
     }
 
     public async removeFile(fileName: string): Promise<void> {
@@ -43,7 +43,7 @@ export class FileSystemRepository implements FileRepository {
     }
 
     public async hasFile(fileName: string): Promise<boolean> {
-        return fileExists(this.getRealPathOfFile(fileName));
+        return isFileReadable(this.getRealPathOfFile(fileName));
     }
 
 }

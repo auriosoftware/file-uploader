@@ -48,4 +48,8 @@ export class InMemoryFileRepository implements FileRepository {
         return isDefined(this.memory[fileName]);
     }
 
+    public async removeAllFiles(): Promise<void> {
+        this.memory = {};
+    }
+
 }
