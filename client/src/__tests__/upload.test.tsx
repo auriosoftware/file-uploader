@@ -3,10 +3,10 @@ import { mount, ReactWrapper } from 'enzyme';
 import App from "../app";
 import { Provider } from "react-redux";
 import { store } from "../store/store";
-import { waitForAsyncActions } from "./utils/async-helpers";
+import { waitForAsyncActions } from "../utils/test-utils/utils/async-helpers";
 import { initTestingDependencies } from "../resources";
 import { RawFile } from "../services/redux-upload-action-dispatcher";
-import { MockUploadController } from "./utils/mock-upload-controller";
+import { MockUploadController } from "../utils/test-utils/utils/mock-upload-controller";
 
 describe('File Upload', () => {
     let componentWrapper: ReactWrapper;

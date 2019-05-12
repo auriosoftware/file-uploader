@@ -1,6 +1,6 @@
-import { UploadController } from "../../services/upload-controller";
-import { RawFile } from "../../services/redux-upload-action-dispatcher";
-import { signal } from "../../utils/signal";
+import { UploadController } from "../../../services/upload-controller";
+import { RawFile } from "../../../services/redux-upload-action-dispatcher";
+import { signal } from "../../signal";
 
 export class MockUploadController implements UploadController<RawFile> {
     onFileAdded = signal<RawFile>();
