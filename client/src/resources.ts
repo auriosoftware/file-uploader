@@ -26,7 +26,7 @@ export function initProductionDependencies() {
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }
 
-export function initTestingDependencies(uploadController: UploadController<any>) {
+export function initTestingDependencies(uploadController: UploadController<Resumable.ResumableFile>) {
     initStore(uploadController);
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }

@@ -18,9 +18,6 @@ describe('File Upload', () => {
             onFileProgress: signal<RawFile>(),
             onFileUploadFailed: signal<RawFile>(),
             onFileUploaded: signal<RawFile>(),
-            abortUpload: () => undefined,
-            uploadFile(file: File): void {
-            }
         };
         initTestingDependencies(controller);
     });
