@@ -11,20 +11,25 @@ export class FileUploadServiceTestBed {
 
     public express: Express;
     public fileRepository: FileRepository;
+    public chunksRepository: FileRepository;
     public maximumFileSizeInBytes: number | undefined = undefined;
+    public maximumChunkSizeInBytes: number | undefined = undefined;
     public service: FileUploadHttpService;
 
     constructor() {
         this.express = express();
         this.fileRepository = new InMemoryFileRepository();
+        this.chunksRepository = new InMemoryFileRepository();
         this.service = new FileUploadHttpService();
     }
 
     public async startService(overrideDependencies: Partial<DependencyInjector> = {}): Promise<void> {
         await this.service.start({
             getExpress: async () => this.express,
-            getFileRepository: async () => this.fileRepository,
+            getFileUploadRepository: async () => this.fileRepository,
+            getChunksRepository: async () => this.chunksRepository,
             maximumFileSizeInBytes: this.maximumFileSizeInBytes,
+            maximumChunkSizeInBytes: this.maximumChunkSizeInBytes,
             apiBasePath: '',
             ...overrideDependencies
         });

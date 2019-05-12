@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { RequestContext } from '../request-context';
-import * as Busboy from 'busboy';
-import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
+import { OK } from 'http-status-codes';
 import { logger } from '../http-endpoints';
-import { getErrorDetails, UserError } from '../../lib/errors';
+import { getErrorDetails, InternalError, UserError } from '../../lib/errors';
 import { isDefined, parse, parseNumber } from '../../utils/parse-utils';
 import * as t from 'io-ts';
 import { ChunkMetadata } from "../../chunked-files-assembler/chunked-file";
 import { query } from "winston";
+import * as asyncBusboy from "async-busboy";
 
 export function megaBytesToBytes(megaBytes: number): number {
     return megaBytes * 1000000;
@@ -41,72 +41,12 @@ export async function uploadFile(req: Request, res: Response, context: RequestCo
     const queryParams = parse(req.query, chunkParamsValidator);
     const chunkMetadata = getChunkMetadataFrom(queryParams);
 
-    if (context.maximumFileSizeInBytes && chunkMetadata.totalSize > context.maximumFileSizeInBytes) {
-        logger.debug(`File ${queryParams.resumableFilename} exceeds size limit (${context.maximumFileSizeInBytes} bytes), aborting.`);
-        throw new UserError(`File exceeds maximum allowed size (${context.maximumFileSizeInBytes} bytes)`);
-    }
+    assertFileSizeUnderLimit(chunkMetadata, context.maximumFileSizeInBytes);
+    assertChunkSizeUnderLimit(chunkMetadata, context.maximumChunkSizeInBytes);
 
-    const worker = initWorker();
-    let fileUploaded = false;
+    await uploadFileFromPostRequest(req, chunkMetadata, context);
 
-    worker.on('file', handleFile);
-    worker.on('finish', handleFinish);
-    req.pipe(worker);
-
-    function initWorker() {
-        try {
-            return new Busboy({
-                headers: req.headers,
-                limits: {
-                    fileSize: context.maximumFileSizeInBytes,
-                    files: 1
-                }
-            });
-        } catch (error) {
-            logger.debug(`File upload failed ${getErrorDetails(error)}`);
-            throw new UserError(`Invalid POST request: ${error.message}`);
-        }
-    }
-
-    async function handleFile(fieldName: string, file: any, filename: string) {
-        try {
-
-            logger.debug(`Store "${chunkMetadata.fileId}" chunk ${chunkMetadata.chunkNumber}/${chunkMetadata.totalChunks}`);
-
-            file.on('end', () => {
-                if ((file as any).truncated) {
-                    logger.debug(`File size limit (${context.maximumFileSizeInBytes} bytes) reached while uploading ${filename}`);
-                    badRequest(`File exceeds maximum allowed size (${context.maximumFileSizeInBytes} bytes)`);
-                    worker.end();
-                } else {
-                    fileUploaded = true;
-                }
-            });
-
-            await context.chunksAssembler.writeChunk(chunkMetadata, file);
-        } catch (error) {
-            fail(error);
-        }
-
-        function fail(error: Error) {
-            logger.error(`Internal error while uploading "${filename}": ${getErrorDetails(error)}'`);
-            res.status(INTERNAL_SERVER_ERROR).send('File upload failed.').end();
-        }
-
-        function badRequest(message: string) {
-            logger.debug(`User error while uploading "${filename}": ${message}'`);
-            res.status(BAD_REQUEST).send(message).end();
-        }
-
-    }
-
-    function handleFinish () {
-        if (fileUploaded) {
-            res.status(OK).end();
-        } else {
-            if (!res.headersSent) res.status(BAD_REQUEST).send('"file" form data field was missing or invalid - no file uploaded').end();
-        }
-    }
+    res.status(OK).end();
 }
 
 function assertContentType(request: Request, expectedContentType: string) {
@@ -119,7 +59,60 @@ export function getChunkMetadataFrom(params: ResumableChunkQueryParams): ChunkMe
         fileId: params.resumableIdentifier,
         totalChunks: parseNumber(params.resumableTotalChunks),
         chunkNumber: parseNumber(params.resumableChunkNumber),
-        chunkSize:parseNumber(params.resumableChunkSize),
+        chunkSize: parseNumber(params.resumableChunkSize),
         totalSize: parseNumber(params.resumableTotalSize),
     }
 }
+
+export function assertFileSizeUnderLimit(chunkMetadata: ChunkMetadata, maximumSizeInBytes: number | undefined) {
+    if (isDefined(maximumSizeInBytes) && chunkMetadata.totalSize > maximumSizeInBytes) {
+        logger.debug(`File "${chunkMetadata.fileName}" exceeds size limit (${maximumSizeInBytes} bytes), aborting.`);
+        throw new UserError(`File exceeds maximum allowed size (${maximumSizeInBytes} bytes)`);
+    }
+}
+
+export function assertChunkSizeUnderLimit(chunkMetadata: ChunkMetadata, maxChunkSizeInBytes: number | undefined) {
+    if (isDefined(maxChunkSizeInBytes) && chunkMetadata.chunkSize > maxChunkSizeInBytes) {
+        logger.debug(`Chunk #${chunkMetadata.chunkNumber} of file "${chunkMetadata.fileName}" exceeds size limit (${maxChunkSizeInBytes} bytes), aborting.`);
+        throw new UserError(`File Chunk #${chunkMetadata.chunkNumber} exceeds maximum allowed chunk size (${maxChunkSizeInBytes} bytes)`);
+    }
+}
+
+
+export async function uploadFileFromPostRequest(req: Request, chunkMetadata: ChunkMetadata, context: RequestContext): Promise<void> {
+    let fileProcessingPromise: Promise<void> | null = null;
+
+    await asyncBusboy(req, {
+        headers: req.headers,
+        limits: {
+            fileSize: context.maximumChunkSizeInBytes,
+            files: 1
+        },
+        onFile(fieldName: string, file: any, filename: string) {
+            if (isDefined(fileProcessingPromise)) return;
+            fileProcessingPromise = processFile(file, filename);
+        }
+    });
+
+    if (!isDefined(fileProcessingPromise)) throw new UserError('no file found in request');
+
+    await fileProcessingPromise;
+
+    async function processFile(file: any, filename: string) {
+        try {
+            logger.debug(`Store "${chunkMetadata.fileId}" chunk ${chunkMetadata.chunkNumber}/${chunkMetadata.totalChunks}`);
+
+            file.on('end', () => {
+                if ((file as any).truncated) {
+                    logger.debug(`Chunk size limit (${context.maximumChunkSizeInBytes} bytes) reached while uploading ${filename}`);
+                    throw new UserError(`Chunk exceeded maximum allowed size (${context.maximumChunkSizeInBytes} bytes)`);
+                }
+            });
+
+            await context.chunksAssembler.writeChunk(chunkMetadata, file);
+        } catch (error) {
+            throw new InternalError(`Internal error while uploading "${filename}": ${getErrorDetails(error)}'`);
+        }
+    }
+}
+

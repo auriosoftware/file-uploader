@@ -1,9 +1,8 @@
-import { FileNotFoundError, FileRepository } from './file-repository';
+import { FileRepository } from './file-repository';
 import { Readable, Writable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileExists } from '../utils/fs-utils';
-import { getErrorDetails, InternalError } from '../lib/errors';
 import { getLogger } from '../lib/logger';
 import { promisify } from "util";
 
@@ -17,23 +16,12 @@ export class FileSystemRepository implements FileRepository {
 
     public async getFileReader(fileName: string): Promise<Readable> {
         const filePath = this.getRealPathOfFile(fileName);
-
-        if (await fileExists(filePath)) {
-            return fs.createReadStream(filePath);
-        } else {
-            logger.debug(`Failed to read from ${filePath}`);
-            throw new FileNotFoundError(fileName);
-        }
+        return fs.createReadStream(filePath);
     }
 
     public async getFileWriter(fileName: string): Promise<Writable> {
         const filePath = this.getRealPathOfFile(fileName);
-
-        try {
-            return fs.createWriteStream(filePath);
-        } catch (error) {
-            throw new InternalError(`Failed to write into ${filePath}: ${getErrorDetails(error)}`);
-        }
+        return fs.createWriteStream(filePath);
     }
 
     private getRealPathOfFile(fileName: string) {

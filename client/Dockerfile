@@ -7,7 +7,7 @@ COPY . ./
 RUN npm run build
 
 # Stage 2 - production image
-FROM abiosoft/caddy:latest
+FROM abiosoft/caddy:1.0.0-no-stats
 
 COPY ./Caddyfile /etc/Caddyfile
 COPY --from=builder /usr/src/app/build /srv

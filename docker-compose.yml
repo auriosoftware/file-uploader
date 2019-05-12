@@ -5,15 +5,15 @@ services:
     depends_on:
       - server
     ports:
-      - 80:80
+      - 80:${UPLOADER_UI_PORT}
     environment:
-      API_SERVER_HOST: http://server:3001
+      API_SERVER_HOST: http://server:${UPLOADER_SERVER_PORT}
     volumes:
-      - ./data/logs/client:/logs
+      - ${UPLOADER_LOG_DIR}/client:/logs
   server:
     build: server
     ports:
-      - 3001:3001
+      - 3001:${UPLOADER_SERVER_PORT}
     volumes:
-      - ./data/uploaded-files:/usr/src/app/data
-      - ./data/logs/server:/usr/src/app/logs
+      - ${UPLOADER_FILES_DIR}:/usr/src/app/data
+      - ${UPLOADER_LOG_DIR}/server:/usr/src/app/logs

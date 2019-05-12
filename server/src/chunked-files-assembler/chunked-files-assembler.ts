@@ -17,10 +17,17 @@ export class ChunkedFilesAssembler {
 
         if (!matchingFile) {
             matchingFile = new ChunkedFile(chunkData, this.fileRepository);
-            matchingFile.onCompleted(() => delete this.incompleteFiles[chunkData.fileId])
+            matchingFile.onCompleted(() => delete this.incompleteFiles[chunkData.fileId]);
+            matchingFile.onFailed(() => delete this.incompleteFiles[chunkData.fileId]);
             this.incompleteFiles[chunkData.fileId] = matchingFile;
         }
 
-        await matchingFile.writeChunk(chunkData, stream);
+        try {
+            await matchingFile.writeChunk(chunkData, stream);
+        } catch (error) {
+            delete this.incompleteFiles[chunkData.fileId];
+            throw error;
+        }
     }
+
 }

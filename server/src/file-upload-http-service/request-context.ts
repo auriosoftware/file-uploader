@@ -5,4 +5,5 @@ export interface RequestContext {
     fileRepository: FileRepository;
     chunksAssembler: ChunkedFilesAssembler;
     maximumFileSizeInBytes?: number;
+    maximumChunkSizeInBytes?: number;
 }

@@ -7,7 +7,7 @@ import { RequestContext } from './request-context';
 import { ServiceNotAvailableError } from "../lib/errors";
 import { ChunkedFilesAssembler } from "../chunked-files-assembler/chunked-files-assembler";
 import { HttpRequestContextFactory, registerEndpointsOnExpressServer } from "../lib/express-api/express-register-endpoints";
-import { appConfig } from "../app-config";
+import { FileSystemRepository } from "../file-repository/file-system-repository";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -20,11 +20,12 @@ const logger = getLogger('FileUploadService');
 
 export interface DependencyInjector {
     maximumFileSizeInBytes?: number;
+    maximumChunkSizeInBytes?: number;
     apiBasePath: string;
 
     getExpress(): Promise<Express>;
-
-    getFileRepository(): Promise<FileRepository>;
+    getFileUploadRepository(): Promise<FileRepository>;
+    getChunksRepository(): Promise<FileRepository>;
 }
 
 export class FileUploadHttpService {
@@ -40,8 +41,8 @@ export class FileUploadHttpService {
             await this.state.set(ServiceState.INITIALIZING);
 
             this.httpServer = await injector.getExpress();
-            this.fileRepository = await injector.getFileRepository();
-            this.chunkedFilesAssembler = new ChunkedFilesAssembler(this.fileRepository);
+            this.fileRepository = await injector.getFileUploadRepository();
+            this.chunkedFilesAssembler = new ChunkedFilesAssembler(await injector.getChunksRepository());
             this.requestContextFactory = this.createRequestContextFactory(injector);
 
             registerEndpointsOnExpressServer(this.httpServer, {

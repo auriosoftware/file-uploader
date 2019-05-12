@@ -3,6 +3,7 @@ import { FileRepository } from "../file-repository/file-repository";
 import { getLogger } from "../lib/logger";
 import { Dictionary } from "../utils/types";
 import { signal } from "../lib/signal";
+import { pipe } from "../utils/stream-utils";
 
 const logger = getLogger('ResumablejsChunksAssembler');
 
@@ -16,8 +17,9 @@ export interface ChunkMetadata {
 }
 
 export class ChunkedFile {
+    public onCompleted = signal<void>();
+    public onFailed = signal<void>();
     private finishedChunks: Dictionary<boolean> = {};
-
     private readonly fileName: string;
     private readonly fileId: string;
     private readonly chunkSize: number;
@@ -30,23 +32,21 @@ export class ChunkedFile {
         this.totalChunks = chunkData.totalChunks;
     }
 
-    public onCompleted = signal<void>();
-
     public async writeChunk(chunkData: ChunkMetadata, stream: Readable) {
         this.validateChunkData(chunkData);
-
         const writer = await this.fileRepository.getFileWriter(`.resumable-chunk.${this.fileId}.${chunkData.chunkNumber}`);
-        stream.pipe(writer);
 
-        stream.on("end", async () => {
-            this.finishedChunks[chunkData.chunkNumber] = true;
-            const chunksDone = Object.keys(this.finishedChunks).length;
-            this.debugLog(`${chunksDone} / ${this.totalChunks} chunks completed`);
-            if (chunksDone === this.totalChunks) {
-                await this.assembleFile();
-            }
-            //TODO ERROR HANDLING
-        });
+        await pipe(stream, writer);
+        await this.handleChunkFinished(chunkData);
+    }
+
+    private async handleChunkFinished(chunkData: ChunkMetadata): Promise<void> {
+        this.finishedChunks[chunkData.chunkNumber] = true;
+        const chunksDone = Object.keys(this.finishedChunks).length;
+        this.debugLog(`${chunksDone} / ${this.totalChunks} chunks completed`);
+        if (chunksDone === this.totalChunks) {
+            await this.assembleFile();
+        }
     }
 
     private async assembleFile() {
@@ -58,11 +58,12 @@ export class ChunkedFile {
             this.debugLog(`Writing chunk #${i}.`);
 
             const chunkReader = await this.fileRepository.getFileReader(`.resumable-chunk.${this.fileId}.${i}`);
-            chunkReader.pipe(writer, { end: false });
-            await new Promise((resolve, reject) => {
+            const promise = new Promise((resolve, reject) => {
                 chunkReader.on('end', resolve);
                 chunkReader.on('error', reject);
             });
+            chunkReader.pipe(writer, { end: false });
+            await promise;
         }
 
         await this.deleteAllChunks();
