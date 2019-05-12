@@ -1,10 +1,9 @@
 import { UploadElementBinder } from './services/upload-element-binder/upload-element-binder';
 import { UploadResumableElementBinder } from './services/upload-element-binder/upload-resumable-element-binder';
-import { ResumableJsUploadController } from './services/resumable-js-upload-controller';
-import { UploadController } from './services/upload-controller';
+import { ResumableJsUploadController } from './services/upload-controller/resumable-js-upload-controller';
+import { UploadController } from './services/upload-controller/upload-controller';
 import { initStore } from './store/store';
 import { config } from './config/config';
-import { RawFile } from './utils/test-utils/raw-file';
 
 export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
 
@@ -27,7 +26,7 @@ export function initProductionDependencies() {
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }
 
-export function initTestingDependencies(uploadController: UploadController<RawFile>) {
+export function initTestingDependencies(uploadController: UploadController) {
     initStore(uploadController);
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }

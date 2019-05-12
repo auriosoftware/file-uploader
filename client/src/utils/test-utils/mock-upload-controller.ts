@@ -1,12 +1,11 @@
-import { UploadController } from '../../services/upload-controller';
-import { RawFile } from './raw-file';
+import { FileDescriptor, UploadController } from '../../services/upload-controller/upload-controller';
 import { signal } from '../signal';
 
-export class MockUploadController implements UploadController<RawFile> {
-    public onFileAdded = signal<RawFile>();
-    public onFileProgress = signal<RawFile>();
-    public onFileUploadFailed = signal<{file: RawFile, message: string}>();
-    public onFileUploaded = signal<RawFile>();
+export class MockUploadController implements UploadController {
+    public onFileAdded = signal<FileDescriptor>();
+    public onFileProgress = signal<{file: FileDescriptor, progress: number}>();
+    public onFileUploadFailed = signal<{file: FileDescriptor, message: string}>();
+    public onFileUploaded = signal<FileDescriptor>();
     public abortUpload() {}
     public uploadFile() {}
 }

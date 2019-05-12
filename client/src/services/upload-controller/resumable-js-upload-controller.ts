@@ -1,7 +1,7 @@
-import { UploadController } from './upload-controller';
+import { FileDescriptor, UploadController } from './upload-controller';
 import Resumable from 'resumablejs';
-import { signal } from '../utils/signal';
-import { Dictionary } from '../utils/types';
+import { signal } from '../../utils/signal';
+import { Dictionary } from '../../utils/types';
 
 export interface Config {
     chunkSizeInBytes: number;
@@ -11,17 +11,16 @@ export interface Config {
     maxChunkRetries: number;
 }
 
-export class ResumableJsUploadController implements UploadController<Resumable.ResumableFile> {
+export class ResumableJsUploadController implements UploadController {
 
+    public onFileAdded = signal<FileDescriptor>();
+    public onFileProgress = signal<{ file: FileDescriptor, progress: number }>();
+    public onFileUploadFailed = signal<{ file: FileDescriptor, message: string }>();
+    public onFileUploaded = signal<FileDescriptor>();
     private activeUploads: Dictionary<Resumable.ResumableFile> = {};
 
     constructor(private config: Config) {
     }
-
-    public onFileAdded = signal<Resumable.ResumableFile>();
-    public onFileProgress = signal<Resumable.ResumableFile>();
-    public onFileUploadFailed = signal<{file: Resumable.ResumableFile, message: string}>();
-    public onFileUploaded = signal<Resumable.ResumableFile>();
 
     public abortUpload(fileId: string): void {
         const existingFile = this.activeUploads[fileId];
@@ -53,20 +52,33 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
         resumable.addFile(fileToUpload);
 
         resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
-            this.onFileAdded.fire(file);
+            this.onFileAdded.fire(toFileDescriptor(file));
             this.activeUploads[file.uniqueIdentifier] = file;
             resumable.upload();
         });
         resumable.on('fileError', (file: Resumable.ResumableFile, message) => {
             removeFromActiveUploads(file);
-            this.onFileUploadFailed.fire({file, message});
+            this.onFileUploadFailed.fire({ file: toFileDescriptor(file), message });
         });
         resumable.on('fileSuccess', (file: Resumable.ResumableFile) => {
             removeFromActiveUploads(file);
-            this.onFileUploaded.fire(file);
+            this.onFileUploaded.fire(toFileDescriptor(file));
         });
-        resumable.on('fileProgress', this.onFileProgress.fire);
+        resumable.on('fileProgress', (file: Resumable.ResumableFile) => {
+            this.onFileProgress.fire({
+                file: toFileDescriptor(file),
+                progress: file.progress(true) * 100
+            });
+        });
 
     }
 
+}
+
+function toFileDescriptor(file: Resumable.ResumableFile): FileDescriptor {
+    return {
+        size: file.size,
+        name: file.fileName,
+        id: file.uniqueIdentifier
+    };
 }

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { store } from '../store/store';
 import { waitForAsyncActions } from '../utils/test-utils/async-helpers';
 import { initTestingDependencies } from '../resources';
-import { RawFile } from '../utils/test-utils/raw-file';
+import { FileDescriptor } from '../services/upload-controller/upload-controller';
 import { MockUploadController } from '../utils/test-utils/mock-upload-controller';
 import { App } from '../app';
 
@@ -21,7 +21,7 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
 
@@ -55,10 +55,10 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
-            controller.onFileProgress.fire({...file, progress: () => 0.5});
+            controller.onFileProgress.fire({file, progress: 50});
 
             await waitForAsyncActions();
             componentWrapper.update();
@@ -78,12 +78,12 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
-            controller.onFileProgress.fire({...file, progress: () => 0.5});
-            controller.onFileProgress.fire({...file, progress: () => 0.9});
-            controller.onFileUploaded.fire({...file, progress: () => 1});
+            controller.onFileProgress.fire({file, progress: 50});
+            controller.onFileProgress.fire({file, progress: 90});
+            controller.onFileUploaded.fire(file);
 
             await waitForAsyncActions();
             componentWrapper.update();
@@ -115,10 +115,10 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
-            controller.onFileProgress.fire({...file, progress: () => 0.5});
+            controller.onFileProgress.fire({file, progress: 50});
 
             await waitForAsyncActions();
             componentWrapper.update();
@@ -148,11 +148,11 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
-            controller.onFileProgress.fire({...file, progress: () => 0.5});
-            controller.onFileProgress.fire({...file, progress: () => 0.9});
+            controller.onFileProgress.fire({file, progress: 50});
+            controller.onFileProgress.fire({file, progress: 90});
             controller.onFileUploadFailed.fire({ file, message: 'oops'});
 
             await waitForAsyncActions();
@@ -185,11 +185,11 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
 
             controller.onFileAdded.fire(file);
-            controller.onFileProgress.fire({...file, progress: () => 0.9});
-            controller.onFileUploaded.fire({...file, progress: () => 1});
+            controller.onFileProgress.fire({file, progress: 90});
+            controller.onFileUploaded.fire(file);
 
             await waitForAsyncActions();
             componentWrapper.update();
@@ -207,8 +207,8 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file1: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
-            const file2: RawFile = {fileName: 'dummyFile2.png', size: 100, uniqueIdentifier: 'id2', progress: () => 0};
+            const file1: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
+            const file2: FileDescriptor = {name: 'dummyFile2.png', size: 100, id: 'id2'};
 
             controller.onFileAdded.fire(file1);
             controller.onFileAdded.fire(file2);
@@ -235,11 +235,11 @@ describe('File Upload', () => {
         beforeEach(async () => {
             componentWrapper = mount(<Provider store={store}><App/></Provider>);
             await waitForAsyncActions();
-            const file1: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
-            const file2: RawFile = {fileName: 'dummyFile2.png', size: 100, uniqueIdentifier: 'id2', progress: () => 0};
+            const file1: FileDescriptor = {name: 'dummyFile.png', size: 222, id: 'id'};
+            const file2: FileDescriptor = {name: 'dummyFile2.png', size: 100, id: 'id2'};
 
             controller.onFileAdded.fire(file1);
-            controller.onFileProgress.fire({...file1, progress: () => 0.5});
+            controller.onFileProgress.fire({file: file1, progress: 50});
             controller.onFileAdded.fire(file2);
 
             await waitForAsyncActions();
