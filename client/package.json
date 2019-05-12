@@ -26,8 +26,8 @@
     "typescript-fsa-reducers": "^1.2.1"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "REACT_APP_ENV=development react-app-rewired start",
+    "build": "REACT_APP_ENV=production react-app-rewired build",
     "test": "react-app-rewired test",
     "test:integration": "react-app-rewired test ./test",
     "eject": "react-scripts eject"

@@ -21,7 +21,7 @@ export const FileComponent = (props: Props) => {
             <Card className={style.rootLayout}>
                 <div className={style.titleRow}>
                     {renderStatusIcon()}
-                    <div className={style.title}>{props.file.name}</div>
+                    {renderFileName()}
                     {isUploadSuccessful() && renderDownloadButton()}
                     {isUploadInProgress() && renderAbortButton()}
                 </div>
@@ -42,6 +42,10 @@ export const FileComponent = (props: Props) => {
             case "uploading":
                 return <LoopIcon data-test-uploading-icon className={`${style.statusIcon} ${style.uploading}`}/>;
         }
+    }
+
+    function renderFileName(): JSX.Element {
+        return <div className={style.title}>{props.file.name}</div>;
     }
 
     function renderDownloadButton(): JSX.Element {
