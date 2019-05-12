@@ -1,8 +1,10 @@
+import { SignalHandler } from "../utils/signal";
+
 export interface UploadController<T> {
-    onFileAdded(cb: (file: T) => void): void;
-    onFileUploaded(cb: (file: T) => void): void;
-    onFileUploadFailed(cb: (data: {file: T, message: string}) => void): void;
-    onFileProgress(cb: (file: T) => void): void;
+    onFileAdded(handler: SignalHandler<T>): void;
+    onFileUploaded(handler: SignalHandler<T>): void;
+    onFileUploadFailed(handler: SignalHandler<{file: T, message: string}>): void;
+    onFileProgress(handler: SignalHandler<T>): void;
     abortUpload(fileId: string): void;
     uploadFile(file: File): void;
 }

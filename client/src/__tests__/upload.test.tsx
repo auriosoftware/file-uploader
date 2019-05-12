@@ -1,24 +1,19 @@
 import React from 'react';
-import {mount, ReactWrapper} from 'enzyme';
+import { mount, ReactWrapper } from 'enzyme';
 import App from "../app";
-import {Provider} from "react-redux";
-import {store} from "../store/store";
-import {waitForAsyncActions} from "./utils/async-helpers";
-import {initTestingDependencies} from "../resources";
-import {signal} from "../utils/signal";
-import {RawFile} from "../services/redux-upload-action-dispatcher";
+import { Provider } from "react-redux";
+import { store } from "../store/store";
+import { waitForAsyncActions } from "./utils/async-helpers";
+import { initTestingDependencies } from "../resources";
+import { RawFile } from "../services/redux-upload-action-dispatcher";
+import { MockUploadControler } from "./utils/mock-upload-controller";
 
 describe('File Upload', () => {
     let componentWrapper: ReactWrapper;
-    let controller: any;
+    let controller: MockUploadControler;
 
     beforeEach(() => {
-        controller = {
-            onFileAdded: signal<RawFile>(),
-            onFileProgress: signal<RawFile>(),
-            onFileUploadFailed: signal<RawFile>(),
-            onFileUploaded: signal<RawFile>(),
-        };
+        controller = new MockUploadControler();
         initTestingDependencies(controller);
     });
 

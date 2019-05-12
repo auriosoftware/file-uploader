@@ -56,14 +56,8 @@ export class ChunkedFile {
 
         for (let i = 1; i <= this.totalChunks; ++i) {
             this.debugLog(`Writing chunk #${i}.`);
-
-            const chunkReader = await this.chunksRepository.getFileReader(`.resumable-chunk.${this.fileId}.${i}`);
-            const promise = new Promise((resolve, reject) => {
-                chunkReader.on('end', resolve);
-                chunkReader.on('error', reject);
-            });
-            chunkReader.pipe(writer, { end: false });
-            await promise;
+            const chunkReader = await this.chunksRepository.getFileReader(this.getChunkFileName(i));
+            await pipe(chunkReader, writer)
         }
 
         await this.deleteAllChunks();
@@ -74,12 +68,16 @@ export class ChunkedFile {
         writer.end();
     }
 
+    private getChunkFileName(chunkNumber: number) {
+        return `.resumable-chunk.${this.fileId}.${chunkNumber}`;
+    }
+
     private async deleteAllChunks() {
         this.debugLog(`Deleting all chunks`);
 
         for (let i = 1; i <= this.totalChunks; ++i) {
             this.debugLog(`Deleting chunk #${i}`);
-            await this.chunksRepository.removeFile(`.resumable-chunk.${this.fileId}.${i}`);
+            await this.chunksRepository.removeFile(this.getChunkFileName(i));
         }
     }
 
