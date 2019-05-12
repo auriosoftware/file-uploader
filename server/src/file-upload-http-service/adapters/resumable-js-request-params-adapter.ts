@@ -25,7 +25,7 @@ export const resumableJsRequestParamsValidator: t.Type<ResumableJsRequestParams>
 
 export function getChunkMetadataFromResumableJsRequest(params: ResumableJsRequestParams): ChunkMetadata {
     return {
-        fileName: params.resumableFilename,
+        fileName: encodeURIComponent(params.resumableFilename),
         fileId: params.resumableIdentifier,
         totalChunks: parseNumber(params.resumableTotalChunks),
         chunkNumber: parseNumber(params.resumableChunkNumber),
