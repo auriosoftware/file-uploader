@@ -4,9 +4,9 @@ import { AppConfig, appConfigValidator } from './app-config';
 import { ExpressHttpServer } from './lib/express-api/express-http-server';
 import { FileSystemRepository } from './file-repository/file-system-repository';
 import { getErrorDetails } from './lib/errors';
-import { megaBytesToBytes } from './file-upload-http-service/endpoint-handlers/upload-file';
 import { parse } from "./utils/parse-utils";
 import * as path from "path";
+import { megaBytesToBytes } from "./utils/conversion-utils";
 
 main().catch((err) => {
     console.error('Error during initalization\n', err);

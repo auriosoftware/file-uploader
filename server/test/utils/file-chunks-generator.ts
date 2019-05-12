@@ -1,9 +1,8 @@
-
-import { ResumableChunkQueryParams } from "../../src/file-upload-http-service/endpoint-handlers/upload-file";
+import { ResumableJsRequestParams } from "../../src/file-upload-http-service/adapters/resumable-js-request-params-adapter";
 
 export interface TestChunkQuery {
     data: Buffer,
-    queryParams: ResumableChunkQueryParams
+    queryParams: ResumableJsRequestParams
 }
 
 export class FileChunksGenerator {

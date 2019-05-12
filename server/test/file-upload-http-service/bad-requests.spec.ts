@@ -67,7 +67,7 @@ describe('FileUploadHttpService bad requests handling', () => {
             .query(testChunk.queryParams)
             .field('nope', 'lol')
             .expect(400)
-            .expect(/no file uploaded/);
+            .expect(/no file found/);
     });
 
     it('POST /v1/files with "file" field containing string should return 400', async () => {
@@ -77,6 +77,6 @@ describe('FileUploadHttpService bad requests handling', () => {
             .query(testChunk.queryParams)
             .field('file', 'somestring')
             .expect(400)
-            .expect(/no file uploaded/);
+            .expect(/no file found/);
     });
 });
