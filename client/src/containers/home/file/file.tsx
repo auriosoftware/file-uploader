@@ -6,6 +6,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorIcon from '@material-ui/icons/Error';
+import AbortedIcon from '@material-ui/icons/CropSquareSharp';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 export interface Props {
@@ -22,7 +23,7 @@ export const FileComponent = (props: Props) => {
                     {renderStatusIcon()}
                     <div className={style.title}>{props.file.name}</div>
                     {isUploadSuccessful() && renderDownloadButton()}
-                    {renderAbortButton()}
+                    {isUploadInProgress() && renderAbortButton()}
                 </div>
                 {isUploadInProgress() && renderProgressBar()}
             </Card>
@@ -34,6 +35,8 @@ export const FileComponent = (props: Props) => {
         switch (props.file.status) {
             case "done":
                 return <CheckIcon data-test-done-icon className={`${style.statusIcon} ${style.done}`}/>;
+            case "aborted":
+                return <AbortedIcon data-test-aborted-icon className={`${style.statusIcon} ${style.done}`}/>;
             case "failed":
                 return <ErrorIcon data-test-failed-icon className={`${style.statusIcon} ${style.failed}`}/>;
             case "uploading":
@@ -48,7 +51,7 @@ export const FileComponent = (props: Props) => {
     }
 
     function renderAbortButton(): JSX.Element {
-        return <IconButton aria-label="Clear" onClick={props.onAbortUpload}>
+        return <IconButton data-test-abort-button aria-label="Clear" onClick={props.onAbortUpload}>
             <ClearIcon/>
         </IconButton>;
     }

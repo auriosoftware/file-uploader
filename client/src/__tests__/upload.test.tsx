@@ -51,6 +51,10 @@ describe('File Upload', () => {
             expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-uploading-icon]')).toBe(true);
         });
 
+        it('should display an abort button', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-abort-button]')).toBe(true);
+        });
+
     });
 
     describe('when a file upload was initialized and progress changed to 50%', () => {
@@ -107,6 +111,43 @@ describe('File Upload', () => {
             expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-uploading-icon]')).toBe(false);
         });
 
+        it('should NOT display an abort button', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-abort-button]')).toBe(false);
+        });
+
+    });
+
+    describe('when a file upload was initialized, processing a while and then uploaded was ABORTED', () => {
+        beforeEach(async () => {
+            componentWrapper = mount(<Provider store={store}><App/></Provider>);
+            await waitFor(100);
+            const file: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+
+            controller.onFileAdded.fire(file);
+            controller.onFileProgress.fire({...file, progress: () => 0.5});
+
+            await waitFor(100);
+            componentWrapper.update();
+            componentWrapper.find('[data-test-file-name="dummyFile.png"] [data-test-abort-button]').first().simulate('click');
+            componentWrapper.update();
+        });
+
+        it('should display a aborted icon', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-aborted-icon]')).toBe(true);
+        });
+
+        it('should NOT display a download button', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-download-button]')).toBe(false);
+        });
+
+        it('should NOT display a progress bar', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-progress]')).toBe(false);
+        });
+
+        it('should NOT display an abort button', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-abort-button]')).toBe(false);
+        });
+
     });
 
     describe('when a file upload was initialized, processing a while and then FAILED', () => {
@@ -140,6 +181,10 @@ describe('File Upload', () => {
             expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-uploading-icon]')).toBe(false);
         });
 
+        it('should NOT display an abort button', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"] [data-test-abort-button]')).toBe(false);
+        });
+
     });
 
     describe('when a file upload was successfully uploaded and clicked on download', () => {
@@ -155,6 +200,7 @@ describe('File Upload', () => {
             await waitFor(100);
             componentWrapper.update();
             componentWrapper.find('[data-test-file-name="dummyFile.png"] [data-test-download-button]').first().simulate('click');
+            componentWrapper.update();
         });
 
         it('should download correct file', () => {

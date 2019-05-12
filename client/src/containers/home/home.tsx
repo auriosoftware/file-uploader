@@ -27,7 +27,7 @@ function mapStateToProps(state: RootState): PropsFromStore {
 
 function mapDispatchToProps(dispatch: Dispatch): PropsFromDispatch {
     return {
-        abortUpload: (fileId: FileId) => dispatch(FilesActions.deleteFile(fileId))
+        abortUpload: (fileId: FileId) => dispatch(FilesActions.abortFile(fileId))
     };
 }
 

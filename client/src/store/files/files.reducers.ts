@@ -8,7 +8,7 @@ export const filesReducer = reducerWithInitialState<FilesState>({ byId: {} })
     .case(FilesActions.uploadFile.done, handleUploadFileDone)
     .case(FilesActions.uploadFile.failed, handleUploadFileFailed)
     .case(FilesActions.updateFileProgress, handleProgressUpdate)
-    .case(FilesActions.deleteFile, handleDeleteFile);
+    .case(FilesActions.abortFile, handleAbortFile);
 
 function handleUploadFileStarted(state: FilesState, payload: UploadFilePayload): FilesState {
     return {
@@ -51,15 +51,11 @@ function handleProgressUpdate(state: FilesState, payload: UpdateFileProgressPayl
     });
 }
 
-function handleDeleteFile(state: FilesState, fileId: FileId) {
-    const newState = {
-        ...state,
-        byId: {
-            ...state.byId
-        }
-    };
-    delete newState.byId[fileId];
-    return newState;
+function handleAbortFile(state: FilesState, fileId: FileId) {
+    return updateFile(state, fileId, file => ({
+        ...file,
+        status: 'aborted'
+    }));
 }
 
 function handleUploadFileDone(state: FilesState, action: Success<UploadFilePayload, void>) {

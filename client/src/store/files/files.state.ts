@@ -9,7 +9,7 @@ export type FileId = string;
 export interface File {
     id: FileId;
     startedAt: Date;
-    status: 'done' | 'uploading' | 'failed';
+    status: 'done' | 'uploading' | 'failed' | 'aborted';
     name: string;
     size: number;
     progress: number;
