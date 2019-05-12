@@ -56,7 +56,6 @@ const HomeComponent = (props: Props) => {
 };
 
 function downloadFile(fileName: string) {
-    console.log('DOWNLOADING');
     window.location.href = apiRoutes.download(fileName);
 }
 

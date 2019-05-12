@@ -209,6 +209,60 @@ describe('File Upload', () => {
 
     });
 
+    describe('when upload was initialized for 2 files', () => {
+        beforeEach(async () => {
+            componentWrapper = mount(<Provider store={store}><App/></Provider>);
+            await waitFor(100);
+            const file1: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file2: RawFile = {fileName: 'dummyFile2.png', size: 100, uniqueIdentifier: 'id2', progress: () => 0};
+
+            controller.onFileAdded.fire(file1);
+            controller.onFileAdded.fire(file2);
+
+            await waitFor(100);
+            componentWrapper.update();
+        });
+
+        it('should display 2 files', () => {
+            expect(componentWrapper.find('[data-test-file]')).toHaveLength(2);
+        });
+
+        it('should display first file with correct name', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile.png"]')).toBe(true);
+        });
+
+        it('should display second file with correct name', () => {
+            expect(componentWrapper.exists('[data-test-file-name="dummyFile2.png"]')).toBe(true);
+        });
+
+    });
+
+    describe('when upload was initialized for 2 files and progress changed to 50% for the first file', () => {
+        beforeEach(async () => {
+            componentWrapper = mount(<Provider store={store}><App/></Provider>);
+            await waitFor(100);
+            const file1: RawFile = {fileName: 'dummyFile.png', size: 222, uniqueIdentifier: 'id', progress: () => 0};
+            const file2: RawFile = {fileName: 'dummyFile2.png', size: 100, uniqueIdentifier: 'id2', progress: () => 0};
+
+            controller.onFileAdded.fire(file1);
+            controller.onFileProgress.fire({...file1, progress: () => 0.5});
+            controller.onFileAdded.fire(file2);
+
+            await waitFor(100);
+            componentWrapper.update();
+        });
+
+        it('should display a progress bar with 50 value for first file', () => {
+            expect(componentWrapper.find('[data-test-file-name="dummyFile.png"] [data-test-progress]').first().prop('value')).toEqual(50);
+        });
+
+        it('should display a progress bar with 0 value for second file', () => {
+            expect(componentWrapper.find('[data-test-file-name="dummyFile2.png"] [data-test-progress]').first().prop('value')).toEqual(0);
+        });
+
+
+    });
+
 
 });
 
