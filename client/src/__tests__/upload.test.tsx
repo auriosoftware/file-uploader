@@ -3,7 +3,7 @@ import {mount, ReactWrapper} from 'enzyme';
 import App from "../app";
 import {Provider} from "react-redux";
 import {store} from "../store/store";
-import {waitFor, waitForAsyncActions} from "./utils/async-helpers";
+import {waitForAsyncActions} from "./utils/async-helpers";
 import {initTestingDependencies} from "../resources";
 import {signal} from "../utils/signal";
 import {RawFile} from "../services/redux-upload-action-dispatcher";
