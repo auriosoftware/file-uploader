@@ -6,7 +6,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorIcon from '@material-ui/icons/Error';
-import AbortedIcon from '@material-ui/icons/CropSquareSharp';
+import AbortedIcon from '@material-ui/icons/Cancel';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 export interface Props {
@@ -36,7 +36,7 @@ export const FileComponent = (props: Props) => {
             case "done":
                 return <CheckIcon data-test-done-icon className={`${style.statusIcon} ${style.done}`}/>;
             case "aborted":
-                return <AbortedIcon data-test-aborted-icon className={`${style.statusIcon} ${style.done}`}/>;
+                return <AbortedIcon data-test-aborted-icon className={`${style.statusIcon} ${style.failed}`}/>;
             case "failed":
                 return <ErrorIcon data-test-failed-icon className={`${style.statusIcon} ${style.failed}`}/>;
             case "uploading":
