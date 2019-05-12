@@ -21,7 +21,10 @@ export const FileComponent = (props: Props) => {
             <Card className={style.rootLayout}>
                 <div className={style.titleRow}>
                     {renderStatusIcon()}
-                    {renderFileName()}
+                    <div className={style.textWrapper}>
+                        {renderFileName()}
+                        {hasUploadFailed() && renderErrorMessage()}
+                    </div>
                     {isUploadSuccessful() && renderDownloadButton()}
                     {isUploadInProgress() && renderAbortButton()}
                 </div>
@@ -48,6 +51,10 @@ export const FileComponent = (props: Props) => {
         return <div className={style.title}>{props.file.name}</div>;
     }
 
+    function renderErrorMessage(): JSX.Element {
+        return <div className={style.errorMessage}>{props.file.error}</div>;
+    }
+
     function renderDownloadButton(): JSX.Element {
         return <IconButton data-test-download-button aria-label="Download" onClick={props.onDownload}>
             <CloudDownloadIcon data-test-download-icon/>
@@ -64,6 +71,10 @@ export const FileComponent = (props: Props) => {
         return (
             <LinearProgress data-test-progress variant="determinate" value={props.file.progress}/>
         );
+    }
+
+    function hasUploadFailed(): boolean {
+        return props.file.status === 'failed';
     }
 
     function isUploadInProgress(): boolean {

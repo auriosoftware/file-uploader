@@ -21,7 +21,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
 
     onFileAdded = signal<Resumable.ResumableFile>();
     onFileProgress = signal<Resumable.ResumableFile>();
-    onFileUploadFailed = signal<Resumable.ResumableFile>();
+    onFileUploadFailed = signal<{file: Resumable.ResumableFile, message: string}>();
     onFileUploaded = signal<Resumable.ResumableFile>();
 
     public abortUpload(fileId: string): void {
@@ -58,9 +58,9 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
             this.activeUploads[file.uniqueIdentifier] = file;
             resumable.upload();
         });
-        resumable.on('fileError', (file: Resumable.ResumableFile) => {
+        resumable.on('fileError', (file: Resumable.ResumableFile, message) => {
             removeFromActiveUploads(file);
-            this.onFileUploadFailed.fire(file);
+            this.onFileUploadFailed.fire({file, message});
         });
         resumable.on('fileSuccess', (file: Resumable.ResumableFile) => {
             removeFromActiveUploads(file);
