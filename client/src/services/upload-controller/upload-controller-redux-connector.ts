@@ -1,10 +1,12 @@
 import { UploadController } from './upload-controller';
 import { FilesActions } from '../../store/files/files.actions';
-import { Dispatch, Middleware, Store } from 'redux';
-import { isType } from 'typescript-fsa';
+import { Dispatch, Store } from 'redux';
+import { takeEvery } from 'redux-saga/effects';
+import { SagaMiddleware } from 'redux-saga';
 
-export function connectUploadControllerToStore(controller: UploadController, store: Store) {
-    mapUploadControllerToDispatch(controller, store.dispatch);
+export function connectUploadControllerToStore(uploadController: UploadController, store: Store, sagaMiddleware: SagaMiddleware) {
+    mapUploadControllerToDispatch(uploadController, store.dispatch);
+    mapReduxActionsToUploadController(uploadController, sagaMiddleware);
 }
 
 export const mapUploadControllerToDispatch = (controller: UploadController, dispatch: Dispatch) => {
@@ -13,29 +15,20 @@ export const mapUploadControllerToDispatch = (controller: UploadController, disp
         dispatch(FilesActions.uploadFile.started(file)));
 
     controller.onFileProgress(({file, progress}) =>
-        dispatch(FilesActions.updateFileProgress({
-            progress: progress,
-            fileId: file.id
-        })));
+        dispatch(FilesActions.updateFileProgress({progress: progress, fileId: file.id})));
 
     controller.onFileUploadFailed(data =>
-        dispatch(FilesActions.uploadFile.failed({
-            params: data.file,
-            error: new Error(data.message)
-        })));
+        dispatch(FilesActions.uploadFile.failed({params: data.file, error: new Error(data.message)})));
 
     controller.onFileUploaded(file =>
-        dispatch(FilesActions.uploadFile.done({
-            params: file,
-            result: undefined
-        })));
+        dispatch(FilesActions.uploadFile.done({ params: file, result: undefined})));
 
 };
 
-export const mapActionsToUploadController = (uploadController: UploadController): Middleware =>
-    store => next => action => {
-        if (isType(action, FilesActions.abortFile)) {
-            uploadController.abortUpload(action.payload);
-        }
-        next(action);
-    };
+export function mapReduxActionsToUploadController(uploadController: UploadController, sagaMiddleware: SagaMiddleware) {
+    sagaMiddleware.run(listenForAbortFileAction, uploadController);
+}
+
+export function* listenForAbortFileAction(uploadController: UploadController) {
+    yield takeEvery(FilesActions.abortFile, (action) => uploadController.abortUpload(action.payload));
+}

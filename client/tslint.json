@@ -70,7 +70,8 @@
     "no-string-throw": true,
     "no-submodule-imports": [
       true,
-      "@material-ui/icons"
+      "@material-ui/icons",
+      "redux-saga/effects"
     ],
     "no-switch-case-fall-through": true,
     "no-trailing-whitespace": true,
