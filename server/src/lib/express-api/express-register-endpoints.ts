@@ -1,19 +1,11 @@
 import { Express, Request, Response } from 'express';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, SERVICE_UNAVAILABLE } from 'http-status-codes';
-import { getErrorDetails, NotFoundError, ServiceNotAvailableError, UserError } from './errors';
-import { getLogger } from './logger';
+import { getErrorDetails, NotFoundError, ServiceNotAvailableError, UserError } from '../errors';
+import { getLogger } from '../logger';
+import { stripLeadingSlash } from "../../utils/parse-utils";
+import { HttpEndpoint } from "./http-endpoint";
 
-export type HttpMethod = 'post' | 'get' | 'put' | 'delete';
-
-export type HttpEndpointHandler<CONTEXT> = (request: Request, response: Response, context: CONTEXT) => any;
-
-export interface HttpEndpoint<CONTEXT> {
-    method: HttpMethod;
-    route: string;
-    handler: HttpEndpointHandler<CONTEXT>;
-}
-
-const logger = getLogger('HttpApiServer');
+const logger = getLogger('registerEndpointsOnExpressServer');
 
 export type HttpRequestContextFactory<CONTEXT> = (request: Request) => Promise<CONTEXT>;
 
@@ -21,15 +13,16 @@ export interface ExpressEndpointsRegistration<CONTEXT> {
     endpoints: Array<HttpEndpoint<CONTEXT>>;
     contextFactory: HttpRequestContextFactory<CONTEXT>;
     apiVersion: number;
+    basePath: string;
 }
 
-export function addApiEndpointsToExpressServer<CONTEXT>(express: Express, params: ExpressEndpointsRegistration<CONTEXT>) {
+export function registerEndpointsOnExpressServer<CONTEXT>(express: Express, params: ExpressEndpointsRegistration<CONTEXT>) {
     logger.info(`Adding ${params.endpoints.length} new endpoints...`);
 
     params.endpoints.forEach(registerEndpoint);
 
     function registerEndpoint(endpoint: HttpEndpoint<CONTEXT>) {
-        const finalRoute = `/v${params.apiVersion}/${endpoint.route}`;
+        const finalRoute = `${params.basePath}/v${params.apiVersion}/${stripLeadingSlash(endpoint.route)}`;
         logger.debug(`Registering endpoint ${endpoint.method} ${finalRoute}`);
 
         express[endpoint.method](finalRoute, async (req, res) => {

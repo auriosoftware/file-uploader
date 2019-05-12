@@ -1,7 +1,7 @@
 import { FileRepository } from './file-repository';
 import { Dictionary } from '../utils/types';
 import { Readable, Writable } from 'stream';
-import { NotFoundError } from '../utils/errors';
+import { NotFoundError } from '../lib/errors';
 import MemoryStream = require('memorystream');
 import { isDefined } from "../utils/parse-utils";
 

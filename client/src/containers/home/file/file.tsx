@@ -1,15 +1,17 @@
 import React from 'react';
 import style from './file.module.scss';
-import { File, FileId } from "../../../store/files/files.state";
+import { File } from "../../../store/files/files.state";
 import { Card, Grow, IconButton, LinearProgress } from "@material-ui/core";
 import ClearIcon from '@material-ui/icons/Clear';
 import CheckIcon from '@material-ui/icons/Check';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorIcon from '@material-ui/icons/Error';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+
 export interface Props {
     file: File
-    onAbortUpload(fileId: FileId): void
+    onAbortUpload(): void
+    onDownload(): void;
 }
 
 export const FileComponent = (props: Props) => {
@@ -20,9 +22,7 @@ export const FileComponent = (props: Props) => {
                     {renderStatusIcon()}
                     <div className={style.title}>{props.file.name}</div>
                     {isUploadSuccessful() && renderDownloadButton()}
-                    <IconButton aria-label="Clear" onClick={handleDeleteFile}>
-                        <ClearIcon/>
-                    </IconButton>
+                    {renderAbortButton()}
                 </div>
                 {isUploadInProgress() && renderProgressBar()}
             </Card>
@@ -42,9 +42,15 @@ export const FileComponent = (props: Props) => {
     }
 
     function renderDownloadButton(): JSX.Element {
-        return <IconButton aria-label="Clear" onClick={() => window.location.href=`/v1/files/${props.file.name}`}>
+        return <IconButton aria-label="Download" onClick={props.onDownload}>
             <CloudDownloadIcon/>
         </IconButton>
+    }
+
+    function renderAbortButton(): JSX.Element {
+        return <IconButton aria-label="Clear" onClick={props.onAbortUpload}>
+            <ClearIcon/>
+        </IconButton>;
     }
 
     function renderProgressBar(): JSX.Element {
@@ -59,9 +65,5 @@ export const FileComponent = (props: Props) => {
 
     function isUploadSuccessful(): boolean {
         return props.file.status === 'done';
-    }
-
-    function handleDeleteFile() {
-        props.onAbortUpload(props.file.id)
     }
 };

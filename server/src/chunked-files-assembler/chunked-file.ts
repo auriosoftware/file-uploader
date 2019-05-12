@@ -1,8 +1,8 @@
 import { Readable } from "stream";
 import { FileRepository } from "../file-repository/file-repository";
-import { getLogger } from "../utils/logger";
+import { getLogger } from "../lib/logger";
 import { Dictionary } from "../utils/types";
-import { signal } from "../utils/signal";
+import { signal } from "../lib/signal";
 
 const logger = getLogger('ResumablejsChunksAssembler');
 

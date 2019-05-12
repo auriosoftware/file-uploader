@@ -2,6 +2,9 @@ import * as winston from 'winston';
 import {format} from 'logform';
 
 export type Logger = winston.Logger;
+export type LogLevel = 'debug' | 'verbose' | 'info' | 'warn' | 'error';
+
+
 
 const alignedWithColorsAndTime = format.combine(
     format.colorize(),

@@ -1,9 +1,9 @@
 import { FileUploadHttpService } from './file-upload-http-service/file-upload-http-service';
-import { getLogger, setLogLevel } from './utils/logger';
+import { getLogger, setLogLevel } from './lib/logger';
 import { appConfig } from './app-config';
-import { ExpressHttpServer } from './utils/express-http-server';
+import { ExpressHttpServer } from './lib/express-api/express-http-server';
 import { FileSystemRepository } from './file-repository/file-system-repository';
-import { getErrorDetails } from './utils/errors';
+import { getErrorDetails } from './lib/errors';
 import { megaBytesToBytes } from './file-upload-http-service/endpoint-handlers/upload-file';
 
 const logger = getLogger('main');

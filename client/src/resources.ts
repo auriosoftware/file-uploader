@@ -4,9 +4,16 @@ import {ResumableJsUploadController} from "./services/resumable-js-upload-contro
 
 export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
 
+export const apiBasePath = '/api/v1';
+export const apiRoutes = {
+    upload: `${apiBasePath}/files`,
+    download: (fileName: string) => `${apiBasePath}/files/${encodeURI(fileName)}`
+};
+
+
 const oneMiBInBytes = 1024 * 1024;
 export const uploadController = new ResumableJsUploadController({
-    endpoint: '/v1/files',
+    endpoint: apiRoutes.upload,
     chunkSizeInBytes: oneMiBInBytes,
     simultaneousChunkAmount: 4,
     chunkRetryIntervalInMs: 3000,

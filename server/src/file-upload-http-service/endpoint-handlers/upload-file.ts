@@ -3,7 +3,7 @@ import { RequestContext } from '../request-context';
 import * as Busboy from 'busboy';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, OK } from 'http-status-codes';
 import { logger } from '../http-endpoints';
-import { getErrorDetails, UserError } from '../../utils/errors';
+import { getErrorDetails, UserError } from '../../lib/errors';
 import { isDefined, parse, parseNumber } from '../../utils/parse-utils';
 import * as t from 'io-ts';
 import { ChunkMetadata } from "../../chunked-files-assembler/chunked-file";

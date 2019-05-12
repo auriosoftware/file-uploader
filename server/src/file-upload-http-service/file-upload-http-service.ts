@@ -1,12 +1,13 @@
-import { addApiEndpointsToExpressServer, HttpRequestContextFactory } from '../utils/express-api';
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../lib/logger';
 import { FileRepository } from '../file-repository/file-repository';
 import { fileUploadHttpEndpoints } from './http-endpoints';
-import { StateTracker } from '../utils/state-tracker';
+import { StateTracker } from '../lib/state-tracker';
 import { Express } from 'express';
 import { RequestContext } from './request-context';
-import { ServiceNotAvailableError } from "../utils/errors";
+import { ServiceNotAvailableError } from "../lib/errors";
 import { ChunkedFilesAssembler } from "../chunked-files-assembler/chunked-files-assembler";
+import { HttpRequestContextFactory, registerEndpointsOnExpressServer } from "../lib/express-api/express-register-endpoints";
+import { appConfig } from "../app-config";
 
 export enum ServiceState {
     STOPPED = 'STOPPED',
@@ -42,10 +43,11 @@ export class FileUploadHttpService {
             this.chunkedFilesAssembler = new ChunkedFilesAssembler(this.fileRepository);
             this.requestContextFactory = this.createRequestContextFactory(injector);
 
-            addApiEndpointsToExpressServer(this.httpServer, {
+            registerEndpointsOnExpressServer(this.httpServer, {
                 endpoints: fileUploadHttpEndpoints,
+                contextFactory: this.requestContextFactory,
                 apiVersion: 1,
-                contextFactory: this.requestContextFactory
+                basePath: appConfig.httpServer.basePath,
             });
             await this.fileRepository.initialize();
 

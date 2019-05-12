@@ -1,5 +1,5 @@
 import { Express } from 'express';
-import express = require('express');
+import * as express from 'express';
 import { promisify } from 'util';
 import { Server } from 'http';
 

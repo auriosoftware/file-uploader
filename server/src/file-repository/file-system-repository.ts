@@ -3,8 +3,8 @@ import { Readable, Writable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileExists } from '../utils/fs-utils';
-import { getErrorDetails, InternalError } from '../utils/errors';
-import { getLogger } from '../utils/logger';
+import { getErrorDetails, InternalError } from '../lib/errors';
+import { getLogger } from '../lib/logger';
 import { promisify } from "util";
 
 const logger = getLogger('FileSystemRepository');
