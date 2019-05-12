@@ -55,6 +55,7 @@ export class ResumableJsUploadController implements UploadController<Resumable.R
 
         resumable.on('fileAdded', (file: Resumable.ResumableFile) => {
             this.onFileAdded.fire(file);
+            this.activeUploads[file.uniqueIdentifier] = file;
             resumable.upload();
         });
         resumable.on('fileError', (file: Resumable.ResumableFile) => {

@@ -38,6 +38,10 @@ function handleUploadFileFailed(state: FilesState, action: Failure<UploadFilePay
 }
 
 function handleProgressUpdate(state: FilesState, payload: UpdateFileProgressPayload): FilesState {
+    if( ! state.byId[payload.fileId]) {
+        return state;
+    }
+
     return updateFile(state, payload.fileId, (file) => {
         if (file.status !== 'uploading') return file;
         return {
