@@ -10,6 +10,7 @@ import {
     getChunkMetadataFromResumableJsRequest,
     resumableJsRequestParamsValidator
 } from '../adapters/resumable-js-request-params-adapter';
+import { bytesToMegaBytes } from "../../utils/conversion-utils";
 
 export async function uploadFile(req: Request, res: Response, context: RequestContext) {
 
@@ -34,7 +35,7 @@ function assertContentType(request: Request, expectedContentType: string) {
 export function assertFileSizeUnderLimit(chunkMetadata: ChunkMetadata, maximumSizeInBytes: number | undefined) {
     if (isDefined(maximumSizeInBytes) && chunkMetadata.totalSize > maximumSizeInBytes) {
         logger.debug(`File "${chunkMetadata.fileName}" exceeds size limit (${maximumSizeInBytes} bytes), aborting.`);
-        throw new UserError(`File exceeds maximum allowed size (${maximumSizeInBytes} bytes)`);
+        throw new UserError(`File is too large (max size is ${bytesToMegaBytes(maximumSizeInBytes)} MB)`);
     }
 }
 
