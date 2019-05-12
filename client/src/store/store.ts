@@ -1,8 +1,8 @@
 import {applyMiddleware, compose, createStore} from "redux";
 import {fileUploadMiddleware} from "./files/files.middlewares";
-import {uploadController} from "../resources";
 import {rootReducer} from "./root.reducer";
 import {mapUploadControllerActionsToDispatch} from "../services/redux-upload-action-dispatcher";
+import {UploadController} from "../services/upload-controller";
 
 declare global {
     interface Window {
@@ -11,14 +11,14 @@ declare global {
     }
 }
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const middleware = composeEnhancer(applyMiddleware(fileUploadMiddleware(uploadController)));
+export let store: any;
 
-export const store = initStore();
+export function initStore(uploadController: UploadController<any>) {
+    const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const middleware = composeEnhancer(applyMiddleware(fileUploadMiddleware(uploadController)));
 
-mapUploadControllerActionsToDispatch(uploadController, store.dispatch);
+    store = createStore(rootReducer, middleware);
 
-export function initStore() {
-    return createStore(rootReducer, middleware);
+    mapUploadControllerActionsToDispatch(uploadController, store.dispatch);
 }
 

@@ -17,7 +17,7 @@ export interface Props {
 export const FileComponent = (props: Props) => {
     return (
         <Grow in={true}>
-            <Card className={style.rootLayout} data-test="file" data-test-file-name={props.file.name}>
+            <Card className={style.rootLayout}>
                 <div className={style.titleRow}>
                     {renderStatusIcon()}
                     <div className={style.title}>{props.file.name}</div>
@@ -33,17 +33,17 @@ export const FileComponent = (props: Props) => {
     function renderStatusIcon(): JSX.Element {
         switch (props.file.status) {
             case "done":
-                return <CheckIcon className={`${style.statusIcon} ${style.done}`}/>;
+                return <CheckIcon data-test-done-icon className={`${style.statusIcon} ${style.done}`}/>;
             case "failed":
-                return <ErrorIcon className={`${style.statusIcon} ${style.failed}`}/>;
+                return <ErrorIcon data-test-failed-icon className={`${style.statusIcon} ${style.failed}`}/>;
             case "uploading":
-                return <LoopIcon className={`${style.statusIcon} ${style.uploading}`}/>;
+                return <LoopIcon data-test-uploading-icon className={`${style.statusIcon} ${style.uploading}`}/>;
         }
     }
 
     function renderDownloadButton(): JSX.Element {
-        return <IconButton aria-label="Download" onClick={props.onDownload}>
-            <CloudDownloadIcon/>
+        return <IconButton data-test-download-button aria-label="Download" onClick={props.onDownload}>
+            <CloudDownloadIcon data-test-download-icon/>
         </IconButton>
     }
 
@@ -55,7 +55,7 @@ export const FileComponent = (props: Props) => {
 
     function renderProgressBar(): JSX.Element {
         return (
-            <LinearProgress variant="determinate" value={props.file.progress}/>
+            <LinearProgress data-test-progress variant="determinate" value={props.file.progress}/>
         );
     }
 

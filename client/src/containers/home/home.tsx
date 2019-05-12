@@ -45,6 +45,8 @@ const HomeComponent = (props: Props) => {
     function renderUploadingFiles(uploadingFiles: Array<File>): Array<JSX.Element> {
         return uploadingFiles.map((file) =>(
             <FileComponent key={file.id}
+                           data-test-file
+                           data-test-file-name={file.name}
                            file={file}
                            onAbortUpload={() => props.abortUpload(file.id)}
                            onDownload={() => downloadFile(file.name)}
@@ -54,6 +56,7 @@ const HomeComponent = (props: Props) => {
 };
 
 function downloadFile(fileName: string) {
+    console.log('DOWNLOADING');
     window.location.href = apiRoutes.download(fileName);
 }
 
