@@ -4,6 +4,7 @@ import {ResumableJsUploadController} from "./services/resumable-js-upload-contro
 import {UploadController} from "./services/upload-controller";
 import {initStore} from "./store/store";
 import {config} from "./config/config";
+import { RawFile } from "./services/redux-upload-action-dispatcher";
 
 export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
 
@@ -26,7 +27,7 @@ export function initProductionDependencies() {
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }
 
-export function initTestingDependencies(uploadController: UploadController<Resumable.ResumableFile>) {
+export function initTestingDependencies(uploadController: UploadController<RawFile>) {
     initStore(uploadController);
     uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
 }

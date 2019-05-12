@@ -6,14 +6,14 @@ import { store } from "../store/store";
 import { waitForAsyncActions } from "./utils/async-helpers";
 import { initTestingDependencies } from "../resources";
 import { RawFile } from "../services/redux-upload-action-dispatcher";
-import { MockUploadControler } from "./utils/mock-upload-controller";
+import { MockUploadController } from "./utils/mock-upload-controller";
 
 describe('File Upload', () => {
     let componentWrapper: ReactWrapper;
-    let controller: MockUploadControler;
+    let controller: MockUploadController;
 
     beforeEach(() => {
-        controller = new MockUploadControler();
+        controller = new MockUploadController();
         initTestingDependencies(controller);
     });
 
@@ -153,7 +153,7 @@ describe('File Upload', () => {
             controller.onFileAdded.fire(file);
             controller.onFileProgress.fire({...file, progress: () => 0.5});
             controller.onFileProgress.fire({...file, progress: () => 0.9});
-            controller.onFileUploadFailed.fire({...file, progress: () => 1});
+            controller.onFileUploadFailed.fire({ file, message: 'oops'});
 
             await waitForAsyncActions();
             componentWrapper.update();
