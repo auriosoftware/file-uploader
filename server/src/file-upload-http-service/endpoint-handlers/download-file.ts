@@ -18,7 +18,7 @@ export async function downloadFile(req: Request, res: Response, context: Request
 
     const sanitizedFileName = encodeURIComponent(params.filename);
 
-    const reader = await context.fileRepository.getFileReader(params.filename);
+    const reader = await context.fileRepository.getFileReader(sanitizedFileName);
     res.header('Content-Disposition', `attachment; filename="${encodeURIComponent(params.filename)}"`).status(OK);
     await pipe(reader, res);
 }
