@@ -89,8 +89,9 @@ export class ChunkedFile {
     }
 
     private async assembleFile() {
-
         this.debugLog(`Final chunk received, starting file assembly`);
+        this.expirationCountdown.stop();
+
         const writer = await this.fileRepository.getFileWriter(this.fileName);
 
         for (let i = 1; i <= this.totalChunks; ++i) {
