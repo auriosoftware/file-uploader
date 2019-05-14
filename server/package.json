@@ -31,6 +31,10 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^12.0.0",
     "@types/supertest": "^2.0.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/crc": "^3.4.0",
+    "@types/helmet": "0.0.43",
+    "@types/memorystream": "^0.3.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-register": "0.0.1",
@@ -43,10 +47,6 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
-    "@types/chai-as-promised": "^7.1.0",
-    "@types/crc": "^3.4.0",
-    "@types/helmet": "0.0.43",
-    "@types/memorystream": "^0.3.0",
     "async-busboy": "^0.7.0",
     "busboy": "^0.3.1",
     "crc": "^3.8.0",

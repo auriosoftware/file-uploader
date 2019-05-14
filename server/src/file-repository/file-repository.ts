@@ -1,5 +1,5 @@
 import { Readable, Writable } from 'stream';
-import { NotFoundError } from "../lib/errors";
+import { NotFoundError } from '../lib/errors';
 
 export interface FileRepository {
     initialize(): Promise<void>;

@@ -1,7 +1,7 @@
-import { Request } from 'express';
+import {Request} from 'express';
 import * as asyncBusboy from 'async-busboy';
-import { isDefined } from '../utils/parse-utils';
-import { UserError } from './errors';
+import {isDefined} from '../utils/parse-utils';
+import {UserError} from './errors';
 
 export interface FileWithMetadata {
     field: string;
@@ -13,7 +13,9 @@ export interface Options {
     maximumChunkSizeInBytes?: number;
 }
 
-export async function processFileInPostRequest(req: Request, options: Options, fileProcessor: (fileWithMetadata: FileWithMetadata) => Promise<void>): Promise<void> {
+export async function processFileInPostRequest(
+    req: Request, options: Options, fileProcessor: (fileWithMetadata: FileWithMetadata) => Promise<void>
+): Promise<void> {
     let fileWithMetadata: FileWithMetadata | null = null;
     let fileProcessedPromise: Promise<void> | null = null;
 

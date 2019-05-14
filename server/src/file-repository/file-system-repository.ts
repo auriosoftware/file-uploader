@@ -3,10 +3,7 @@ import { Readable, Writable } from 'stream';
 import * as fs from 'fs';
 import * as path from 'path';
 import { isDirectoryWritable, isFileReadable } from '../utils/fs-utils';
-import { getLogger } from '../lib/logger';
 import { promisify } from 'util';
-
-const logger = getLogger('FileSystemRepository');
 
 export class FileSystemRepository implements FileRepository {
 
