@@ -1,5 +1,5 @@
 import { FileUploadServiceTestBed } from '../utils/file-upload-service.testbed';
-import { NOT_FOUND, OK } from 'http-status-codes';
+import { INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from 'http-status-codes';
 import { FileChunksGenerator } from '../utils/file-chunks-generator';
 
 describe('FileUploadHttpService features', () => {
@@ -106,6 +106,25 @@ describe('FileUploadHttpService features', () => {
             .expect(NOT_FOUND);
     });
 
+    it('Should detect a corrupted chunk in chunk storage', async () => {
+        const file = Buffer.from('1111222233');
+        const fileChunks = new FileChunksGenerator(file, 'foo.txt', 4);
+
+        await testBed.startService();
+        await testBed.uploadChunk(fileChunks.getChunk(1)).expect(OK);
+        await testBed.uploadChunk(fileChunks.getChunk(2)).expect(OK);
+
+        const writer = await testBed.chunksRepository.getFileWriter(`.resumable-chunk.foo.txt.2`);
+        writer.write('corruption');
+        writer.end();
+
+        await testBed.uploadChunk(fileChunks.getChunk(3))
+            .expect(INTERNAL_SERVER_ERROR);
+
+        await testBed.downloadFile('foo.txt')
+            .expect(NOT_FOUND);
+    });
+
     describe('when maximum file size limit is set to 1000 bytes', () => {
         beforeEach(async () => {
             await testBed.startService({
@@ -128,7 +147,7 @@ describe('FileUploadHttpService features', () => {
 
             await testBed.uploadChunk(fileChunks.getChunk(1))
                 .expect(400)
-                .expect(/exceeds maximum allowed size/);
+                .expect(/too large/);
             await testBed.downloadFile('fileWith1001bytes.bin').expect(404);
         });
 

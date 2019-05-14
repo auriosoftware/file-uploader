@@ -1,9 +1,7 @@
-var path = require("path");
-
 module.exports = {
     httpServer: {
         port: 3001,
-        host: "0.0.0.0",
+        host: "localhost",
         basePath: "/api",
     },
     fileRepository: {

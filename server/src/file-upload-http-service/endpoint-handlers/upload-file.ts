@@ -10,7 +10,7 @@ import {
     getChunkMetadataFromResumableJsRequest,
     resumableJsRequestParamsValidator
 } from '../adapters/resumable-js-request-params-adapter';
-import { bytesToMegaBytes } from "../../utils/conversion-utils";
+import { bytesToMegaBytes } from '../../utils/conversion-utils';
 
 export async function uploadFile(req: Request, res: Response, context: RequestContext) {
 
@@ -53,6 +53,6 @@ async function storeChunk(fileWithMetadata: FileWithMetadata, chunkMetadata: Chu
 
         await context.chunksAssembler.writeChunk(chunkMetadata, fileWithMetadata.file);
     } catch (error) {
-        throw new InternalError(`Internal error while uploading "${fileWithMetadata.fileName}": ${getErrorDetails(error)}'`);
+        throw new InternalError(`Internal error while uploading "${chunkMetadata.fileName}": ${getErrorDetails(error)}'`);
     }
 }

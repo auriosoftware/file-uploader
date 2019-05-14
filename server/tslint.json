@@ -61,7 +61,7 @@
     "no-debugger": true,
     "no-duplicate-variable": true,
     "no-duplicate-imports": false,
-    "no-empty": true,
+    "no-empty": false,
     "no-empty-interface": false,
     "no-eval": true,
     "no-inferrable-types": false,

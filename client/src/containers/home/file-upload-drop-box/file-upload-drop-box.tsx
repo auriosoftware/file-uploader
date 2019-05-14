@@ -1,14 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import style from './file-upload-drop-box.module.scss';
 import { Button } from '@material-ui/core';
-
-interface UploadElementBinder {
-    setDropZoneElement(htmlElement: HTMLElement): void;
-    setFileInputElement(htmlElement: HTMLElement): void;
-}
+import { FileUploadDOMListener } from '../../../services/file-upload-dom-listener/file-upload-dom-listener';
 
 interface CustomProps {
-    uploadElementBinder: UploadElementBinder;
+    fileUploadDOMListener: FileUploadDOMListener;
 }
 
 type Props = CustomProps;
@@ -19,8 +15,8 @@ export const FileUploadDropBox = (props: Props) => {
 
     useEffect(() => {
         if (uploadButtonElement.current && dropAreaElement.current) {
-            props.uploadElementBinder.setDropZoneElement(dropAreaElement.current);
-            props.uploadElementBinder.setFileInputElement(uploadButtonElement.current);
+            props.fileUploadDOMListener.setDropZoneElement(dropAreaElement.current);
+            props.fileUploadDOMListener.setFileInputElement(uploadButtonElement.current);
         }
     });
 

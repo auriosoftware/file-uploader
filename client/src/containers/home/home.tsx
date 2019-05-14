@@ -5,7 +5,7 @@ import { RootState } from '../../store/root.state';
 import { File, FileId } from '../../store/files/files.state';
 import { FileUploadDropBox } from './file-upload-drop-box/file-upload-drop-box';
 import { FileComponent } from './file/file';
-import { apiRoutes, uploadElementBinder } from '../../resources';
+import { apiRoutes, fileUploadDOMListener } from '../../resources';
 import { Dispatch } from 'redux';
 import { FilesActions } from '../../store/files/files.actions';
 import { orderedFilesListSelector } from '../../store/files/files.selectors';
@@ -35,7 +35,7 @@ type Props = PropsFromStore & PropsFromDispatch;
 const HomeComponent = (props: Props) => {
     return (
         <div className={style.rootContainer}>
-            <FileUploadDropBox uploadElementBinder={uploadElementBinder}/>
+            <FileUploadDropBox fileUploadDOMListener={fileUploadDOMListener}/>
             {renderUploadingFiles(props.files)}
         </div>
     );

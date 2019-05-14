@@ -2,7 +2,6 @@ import * as express from 'express';
 import { Express } from 'express';
 import { promisify } from 'util';
 import { Server } from 'http';
-import * as helmet from 'helmet';
 import { getLogger } from '../logger';
 
 export interface ServerConfig {
@@ -18,7 +17,7 @@ export class ExpressHttpServer {
 
     constructor(private config: ServerConfig) {
         this.express = express();
-        this.express.use(helmet()); // protection against common vulnerabilities
+        //this.express.use(helmet()); // protection against common vulnerabilities
     }
 
     public getExpress() {

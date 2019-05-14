@@ -1,11 +1,11 @@
-import { UploadElementBinder } from './services/upload-element-binder/upload-element-binder';
-import { UploadResumableElementBinder } from './services/upload-element-binder/upload-resumable-element-binder';
 import { ResumableJsUploadController } from './services/upload-controller/resumable-js-upload-controller';
 import { UploadController } from './services/upload-controller/upload-controller';
 import { initStore } from './store/store';
 import { config } from './config/config';
+import { ResumablejsFileUploadDomListener } from './services/file-upload-dom-listener/resumablejs-file-upload-dom-listener';
+import { FileUploadDOMListener } from './services/file-upload-dom-listener/file-upload-dom-listener';
 
-export const uploadElementBinder: UploadElementBinder = new UploadResumableElementBinder();
+export const fileUploadDOMListener: FileUploadDOMListener = new ResumablejsFileUploadDomListener();
 
 export const apiBasePath = config.baseApiURI;
 export const apiRoutes = {
@@ -23,10 +23,10 @@ export function initProductionDependencies() {
     });
     initStore(uploadController);
 
-    uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
+    fileUploadDOMListener.onFileAdded((file) => uploadController.uploadFile(file));
 }
 
 export function initTestingDependencies(uploadController: UploadController) {
     initStore(uploadController);
-    uploadElementBinder.onFileAdded((file) => uploadController.uploadFile(file));
+    fileUploadDOMListener.onFileAdded((file) => uploadController.uploadFile(file));
 }

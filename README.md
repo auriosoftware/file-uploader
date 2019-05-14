@@ -1,9 +1,16 @@
 # File Uploader
-This is a simple application for uploading files written entirely with Typescript. It has two component:
- * React web application using Redux and [ResumableJS](http://www.resumablejs.com/), 
-    hosted with [Caddy](https://caddyserver.com/) webserver. Tested with [Jest](https://jestjs.io/) and [Enzyme](https://airbnb.io/enzyme/).
- * NodeJS backend based on [Express](https://expressjs.com/), with runtime typechecking via [io-ts](https://github.com/gcanti/io-ts).
-    Tested with [Mocha](https://mochajs.org/) and [supertest](https://github.com/visionmedia/supertest).
+This is a simple application for uploading and downloading files. It has two components:
+ * **Client** - A React web application that uses:
+    * Redux with [typescript-fsa](https://github.com/aikoven/typescript-fsa), [reselect](https://github.com/reduxjs/reselect) and [redux-saga](https://github.com/redux-saga/redux-saga) for state management
+    * The [ResumableJS](http://www.resumablejs.com/) file upload engine
+    * [Material-UI](https://material-ui.com/) with some SASS styling for look and feel
+    * The [Caddy](https://caddyserver.com/) webserver for hosting
+    * [Jest](https://jestjs.io/) with [Enzyme](https://airbnb.io/enzyme/) for testing
+ * **Server** - A NodeJS backend that uses:
+    * [Express](https://expressjs.com/) for exposing a REST API
+    * [busboy](https://github.com/mscdex/busboy) for handling multipart POST requests
+    * [io-ts](https://github.com/gcanti/io-ts) for run-time typechecking and request data validation
+    * [Mocha](https://mochajs.org/) with [chai](https://www.chaijs.com/) and [supertest](https://github.com/visionmedia/supertest) for testing
 
 ## How to run it
 
@@ -51,3 +58,22 @@ You can also run tests with `npm run test`.
 -   `npm run lint` performs typescript linting with [tslint](https://palantir.github.io/tslint/)
 
 
+## Ideas for futher improvement
+
+**Client**
+
+  * pause and resume download
+  * list and existing uploaded files on page load and allow deletion
+continue uploads on reload
+  * more informative UI (speed and upload status, time remainig, stalled connection warning, …)
+  * more explicit user actions feedback (via toasts or similar)
+  * use custom file upoad DOM listener instead instead of using ResumableJS
+
+**Server**
+
+  * Swagger API documentation
+  * CRC checking
+  * proper cleanup of dead chunks by the chunk assembler
+  * more robustness against corrupted ResumableJS metadata in POST requests
+  * support for querying which chunks are already uploaded
+  * revive existing chunks upon server restart

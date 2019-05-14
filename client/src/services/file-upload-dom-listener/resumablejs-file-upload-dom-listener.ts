@@ -1,8 +1,8 @@
-import { UploadElementBinder } from './upload-element-binder';
 import Resumable from 'resumablejs';
 import { signal } from '../../utils/signal';
+import { FileUploadDOMListener } from './file-upload-dom-listener';
 
-export class UploadResumableElementBinder implements UploadElementBinder {
+export class ResumablejsFileUploadDomListener implements FileUploadDOMListener {
 
    private resumable: Resumable = new Resumable({
       generateUniqueIdentifier: () => Math.random().toString()

@@ -18,8 +18,7 @@ describe('FileUploadHttpService lifecycle', () => {
     describe('while waiting for file repository to initialize', () => {
         beforeEach(async () => {
             testBed.startService({
-                getFileUploadRepository: () => new Promise(() => {
-                })
+                getFileUploadRepository: () => new Promise(() => {})
             }).catch();
         });
 
