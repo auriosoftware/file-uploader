@@ -54,7 +54,6 @@ async function main() {
     async function gracefulShutdown(reason: string) {
         try {
             await fileUploadService.stop(reason);
-            await httpServer.close();
             process.exit(0);
         } catch (error) {
             console.error(`Graceful shutdown failed (${getErrorDetails(error)})`);

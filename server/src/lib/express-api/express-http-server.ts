@@ -3,6 +3,7 @@ import { Express } from 'express';
 import { promisify } from 'util';
 import { Server } from 'http';
 import { getLogger } from '../logger';
+import helmet = require('helmet');
 
 export interface ServerConfig {
     host: string;
@@ -17,7 +18,7 @@ export class ExpressHttpServer {
 
     constructor(private config: ServerConfig) {
         this.express = express();
-        //this.express.use(helmet()); // protection against common vulnerabilities
+        this.express.use(helmet()); // protection against common vulnerabilities
     }
 
     public getExpress() {
@@ -30,7 +31,7 @@ export class ExpressHttpServer {
     }
 
     public async close(): Promise<void> {
-        if (!this.serverInstance) return;
-        return promisify(this.serverInstance.close)();
+        if (!this.serverInstance || !this.serverInstance.listening) return;
+        await promisify(this.serverInstance.close)();
     }
 }
