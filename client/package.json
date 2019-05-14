@@ -1,7 +1,12 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "author": "auriosoftware",
+  "license": "UNLICENSED",
   "private": true,
+  "bugs": {
+    "url": "https://github.com/tomas-gold/auriosoftware-example-app-1/issues"
+  },
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",

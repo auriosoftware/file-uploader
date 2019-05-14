@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "simple file server",
   "main": "src/app.ts",
+  "author": "auriosoftware",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/tomas-gold/auriosoftware-example-app-1/issues"
+  },
+  "homepage": "https://www.auriosoftware.com",
   "scripts": {
     "start": "ts-node-dev ./src/app.ts",
     "start:prod": "node ./dist/src/app.js",
@@ -16,12 +23,6 @@
     "type": "git",
     "url": "git+https://github.com/tomas-gold/auriosoftware-example-app-1.git"
   },
-  "author": "auriosoftware",
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/tomas-gold/auriosoftware-example-app-1/issues"
-  },
-  "homepage": "https://www.auriosoftware.com",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^0.1.3",
     "@types/async-busboy": "^0.7.0",
