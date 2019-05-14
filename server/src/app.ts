@@ -1,5 +1,5 @@
 import { FileUploadHttpService } from './file-upload-http-service/file-upload-http-service';
-import { getLogger, setLogLevel } from './lib/logger';
+import { setLogLevel } from './lib/logger';
 import { AppConfig, appConfigValidator } from './app-config';
 import { ExpressHttpServer } from './lib/express-api/express-http-server';
 import { FileSystemRepository } from './file-repository/file-system-repository';
@@ -19,7 +19,6 @@ async function main() {
     console.info(`Using configuration ${configFile}`);
     const config: AppConfig = parse(require(configFile), appConfigValidator);
 
-    const logger = getLogger('main');
     const fileUploadService = new FileUploadHttpService();
     const httpServer = new ExpressHttpServer(config.httpServer);
 
@@ -57,7 +56,8 @@ async function main() {
             await fileUploadService.stop(reason);
             await httpServer.close();
             process.exit(0);
-        } catch {
+        } catch (error) {
+            console.error(`Graceful shutdown failed (${getErrorDetails(error)})`);
             process.exit(1);
         }
     }

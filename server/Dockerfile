@@ -13,7 +13,7 @@ COPY package*.json ./
 COPY config/production.js config/
 RUN npm install --production
 
-COPY --from=builder /usr/src/app/dist/src ./dist
+COPY --from=builder /usr/src/app/dist/src ./dist/src
 
 RUN mkdir -p data/uploads
 RUN mkdir -p data/tmp
@@ -22,4 +22,4 @@ RUN mkdir -p logs
 ENV NODE_ENV=production
 EXPOSE 3001
 
-ENTRYPOINT ["node", "dist/app.js"]
+ENTRYPOINT ["npm", "run", "start:prod"]

@@ -33,7 +33,7 @@ All the ports and paths mentioned above can be changed in the `.env` file in thi
 (changes require `docker-compose down && docker-compose up` to take effect).
 
 ### Development mode
-If you want to run in in the development node you need **NodeJS** and **npm**.
+If you want to run the application in development mode you need **Node.js** and **npm**.
 
 You have to run the client and server separately:
 
