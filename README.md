@@ -49,7 +49,7 @@ Additional commands:
 
 -   `npm run test` runs tests
 -   `npm run test:debug` runs tests with increased log level
--   `npm run test:coverage` generates tewst coverage report
+-   `npm run test:coverage` generates test coverage report
 -   `npm run lint` performs typescript linting with [tslint](https://palantir.github.io/tslint/)
 
 
