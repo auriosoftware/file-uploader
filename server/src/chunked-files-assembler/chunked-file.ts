@@ -4,9 +4,13 @@ import { Dictionary } from '../utils/types';
 import { signal } from '../lib/signal';
 import { pipe } from '../utils/stream-utils';
 import { crc32 } from 'crc';
-import { InternalError } from '../lib/errors';
+import { getErrorDetails, InternalError, UserError } from '../lib/errors';
+import { Countdown } from '../utils/countdown';
+import { isDefined } from '../utils/parse-utils';
 
 const logger = getLogger('ResumablejsChunksAssembler');
+
+const DEFAULT_EXPIRATION_IN_SECONDS = 600;
 
 export interface ChunkMetadata {
     chunkNumber: number;
@@ -21,26 +25,58 @@ export class ChunkedFile {
     public onCompleted = signal<void>();
     public onFailed = signal<void>();
     private finishedChunkChecksums: Dictionary<number> = {};
+
     private readonly fileName: string;
     private readonly fileId: string;
     private readonly chunkSize: number;
     private readonly totalChunks: number;
+    private readonly totalSize: number;
 
-    constructor(chunkData: ChunkMetadata, private chunksRepository: FileRepository, private fileRepository: FileRepository) {
+    private expirationCountdown: Countdown;
+
+    constructor(chunkData: ChunkMetadata,
+                private chunksRepository: FileRepository,
+                private fileRepository: FileRepository,
+                private staleTimeoutInSeconds: number = DEFAULT_EXPIRATION_IN_SECONDS) {
         this.fileName = chunkData.fileName;
         this.fileId = chunkData.fileId;
         this.chunkSize = chunkData.chunkSize;
         this.totalChunks = chunkData.totalChunks;
+        this.totalSize = chunkData.totalSize;
+
+        this.expirationCountdown = new Countdown(staleTimeoutInSeconds * 1000);
+        this.expirationCountdown.onExpired(() => this.handleFileExpired());
     }
 
     public async writeChunk(chunkData: ChunkMetadata, stream: NodeJS.ReadableStream) {
+        this.expirationCountdown.renew();
         this.validateChunkData(chunkData);
+
+        if (this.chunkAlreadyUploaded(chunkData)) {
+            logger.debug(`ignoring request to store chunk #${chunkData.chunkNumber} since it was already uploaded earlier.`);
+            this.onCompleted.fire();
+            return;
+        }
+
         const writer = await this.chunksRepository.getFileWriter(`.resumable-chunk.${this.fileId}.${chunkData.chunkNumber}`);
         let crc: number = 0;
-        stream.on('data', (chunk) => crc += crc32(chunk));
+        writer.on('data', (chunk) => crc += crc32(chunk));
 
         await pipe(stream, writer);
         await this.handleChunkFinished(chunkData, crc);
+    }
+
+    public chunkAlreadyUploaded(chunkData: ChunkMetadata) {
+        return isDefined(this.finishedChunkChecksums[chunkData.chunkNumber]);
+    }
+
+    public handleFileExpired() {
+        logger.warn(`No chunk written for file ${this.fileName} in ${Math.round(this.staleTimeoutInSeconds)} s,` +
+            ` considering the upload failed.`);
+        this.onFailed.fire();
+        this.deleteAllChunks().catch((e) => {
+            logger.warn(`Error while deleting stale chunks for "${this.fileName}": ${getErrorDetails(e)}`);
+        });
     }
 
     private async handleChunkFinished(chunkData: ChunkMetadata, checksum: number): Promise<void> {
@@ -61,7 +97,9 @@ export class ChunkedFile {
             let crc: number = 0;
             this.debugLog(`Writing chunk #${i}`);
             const chunkReader = await this.chunksRepository.getFileReader(this.getChunkFileName(i));
-            chunkReader.on('data', (chunk) => crc += crc32(chunk));
+            writer.on('data', (data) => {
+                crc += crc32(data);
+            });
 
             await pipe(chunkReader, writer, { end: false });
 
@@ -91,18 +129,36 @@ export class ChunkedFile {
     private async deleteAllChunks() {
         this.debugLog(`Deleting all chunks`);
 
-        for (let i = 1; i <= this.totalChunks; ++i) {
-            this.debugLog(`Deleting chunk #${i}`);
-            await this.chunksRepository.removeFile(this.getChunkFileName(i));
+        for (const chunkNumber of Object.keys(this.finishedChunkChecksums).map(p => parseInt(p, 10))) {
+            this.debugLog(`Deleting chunk #${chunkNumber}`);
+            const chunkFileName = this.getChunkFileName(chunkNumber);
+            if (await this.chunksRepository.hasFile(chunkFileName)) {
+                await this.chunksRepository.removeFile(chunkFileName);
+            }
         }
     }
 
     private validateChunkData(chunkData: ChunkMetadata) {
-        if (chunkData.fileId !== chunkData.fileId) throw new Error(`invalid fileId in chunk data, expected "${this.fileId}", was "${chunkData.fileId}"`);
-        // TODO
+        if (chunkData.fileName === '') throw new UserError('fileName cannot be empty');
+        if (chunkData.fileId === '') throw new UserError('fileId cannot be empty');
+
+        assertEqual(chunkData.fileId, this.fileId, 'fileId');
+        assertEqual(chunkData.fileName, this.fileName, 'fileName');
+        assertEqual(chunkData.totalChunks, this.totalChunks, 'totalChunks value');
+        assertEqual(chunkData.totalSize, this.totalSize, 'totalSize value');
+
+        if (chunkData.chunkNumber > chunkData.totalChunks && chunkData.chunkNumber < 1) {
+            throw new UserError(`chunk number "${chunkData.chunkNumber}" is invalid"`);
+        }
     }
 
     private debugLog(message: string) {
         logger.debug(`[${this.fileName}] ${message}`);
+    }
+}
+
+function assertEqual<T>(actual: T, expected: T, propertyName: string) {
+    if (actual !== expected) {
+        throw new UserError(`invalid ${propertyName} in chunk data, expected "${expected}", was "${actual}`);
     }
 }

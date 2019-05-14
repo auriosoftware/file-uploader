@@ -63,17 +63,16 @@ You can also run tests with `npm run test`.
 **Client**
 
   * pause and resume download
+  * calculate and send CRC checksum for each chunk
   * list and existing uploaded files on page load and allow deletion
 continue uploads on reload
-  * more informative UI (speed and upload status, time remainig, stalled connection warning, …)
+  * more informative UI (speed and upload status, time remaining, stalled connection warning, …)
   * more explicit user actions feedback (via toasts or similar)
   * use custom file upoad DOM listener instead instead of using ResumableJS
 
 **Server**
 
   * Swagger API documentation
-  * CRC checking
-  * proper cleanup of dead chunks by the chunk assembler
   * more robustness against corrupted ResumableJS metadata in POST requests
   * support for querying which chunks are already uploaded
   * revive existing chunks upon server restart
